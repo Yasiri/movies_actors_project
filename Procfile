@@ -1,3 +1,1 @@
-web: npm run build && npm run start
-worker: --optimize_for_size --max_old_space_size=460 --gc_interval=100 server.js
-
+web: node index.js

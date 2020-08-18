@@ -14,6 +14,19 @@ UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 venv
 
+# Node build artifacts
+node_modules
+npm-debug.log
+
+# Local development
+*.venv
+*.dev
+.DS_Store
+
+# Docker
+Dockerfile
+docker-compose.yml
+
 *.log
 log.txt
 npm-debug.log*
