@@ -36,7 +36,7 @@ def after_request(response):
 @app.route('/')
 @cross_origin()
 def index():
-    return 'all fine'
+    return "<h1>Welcome to our server !!</h1>"
 
 
 # db_drop_and_create_all()

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>{% block title %} FSND - Capston Project {% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/img/movie_main_logo.ico') }}" />
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top navbar-shrink" id="mainNav">
+            <div class="container">
+                <img style="height: 70px;padding-right: 14px;margin-left: -201px;width: 103px;"
+                    src="{{ url_for('static', filename='assets/img/movie_main_logo.ico') }}" alt="" />
+                <!-- href="#page-top" -->
+                <a class="navbar-brand js-scroll-trigger"> FSND Casting Agency</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                    data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+                    aria-label="Toggle navigation"> Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        <li id="about_in_login" class="nav-item">
+                            <a class="nav-link js-scroll-trigger" href="#about">About</a>
+                        </li>
+                        <li id="hideViewMovies" class="nav-item">
+                            <a class="nav-link js-scroll-trigger" href="/movies#ViewMovies">View Movies</a>
+                        </li>
+                        <li id="hideViewActors" class="nav-item">
+                            <a class="nav-link js-scroll-trigger" href="/actors#ViewActors">View Actors</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link js-scroll-trigger" href="#ContactUS">Contact US</a>
+                        </li>
+                        <li id="signin_signup" class="nav-item">
+                            <a class="nav-link js-scroll-trigger"
+                                href="https://fsndy.auth0.com/authorize?audience=CapstonApi&response_type=token&client_id=MYU8Nk5ejGzrMzHg5qiDEBAodXoaS0DU&redirect_uri=http://127.0.0.1:5000">login/signup</a>
+                        </li>
+                        <li id="logoutBtn" class="nav-item"><a class="nav-link js-scroll-trigger" disabled
+                                onclick="logOut()">logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <header class="masthead" id="about">
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                <h1 id="ManageCasting" class="mx-auto my-0 text-uppercase">FSND <br> Casting Agency</h1>
+                <h2 class="text-white-50 mx-auto mt-2 mb-5">Digital Casting Agency for creating movies and managing and
+                    assigning actors to movies that simplifies and streamline casting process</h2>
+                <a class="btn btn-primary js-scroll-trigger" href="#sign">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="about-section text-center" id="sign">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 id="ManageCasting" class="text-white mb-4">Manage Casting</h2>
+                    <!-- <h2 id="inup_manage" class="text-white mb-4">signin or signup to Manage Casting</h2> -->
+                    <p class="text-white-50">
+                        FSND Casting Agency a company that is responsible for creating movies and managing and assigning
+                        actors to those movies. You are an Executive Producer within the company and are creating a
+                        system
+                        to simplify and streamline your process.
+                    </p>
+                    <a id="loginBtn" class="btn btn-primary js-scroll-trigger" style="margin: 10px;"
+                        href="https://fsndy.auth0.com/authorize?audience=CapstonApi&response_type=token&client_id=MYU8Nk5ejGzrMzHg5qiDEBAodXoaS0DU&redirect_uri=http://127.0.0.1:5000/">
+                        login/signUp</a>
+                    &nbsp; &nbsp;
+                    <!-- <a id="signUpBtn" class="btn btn-primary js-scroll-trigger" style="margin: 10px;"
+                        href="#sign">signUp</a> -->
+                    <a id="viewActorz" class="btn btn-primary js-scroll-trigger" style="margin: 10px;"
+                        href="/actors#ViewActors">view Actors</a>
+                    <a id="ViewMoviez" class="btn btn-primary js-scroll-trigger" style="margin: 10px;"
+                        href="/movies#ViewMovies">View Movies</a>
+                </div>
+            </div>
+            <img class="img-fluid2" src="{{ url_for('static', filename='assets/img/ipad_2.png') }}" alt="" />
+        </div>
+    </section>
+    <!-- {% block content %}{% endblock %}
+    {% block movies %}{% endblock %}
+    {% block actors %}{% endblock %} -->
+    <!-- Signup-->
+    <!-- Signup-->
+    <section class="signup-section" id="ContactUS">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-lg-8 mx-auto text-center">
+                    <i class="far fa-paper-plane fa-2x mb-2 text-white"></i>
+                    <h2 class="text-white mb-5">Subscribe to receive updates!</h2>
+                    <form class="form-inline d-flex">
+                        <input class="form-control flex-fill mr-0 mr-sm-2 mb-3 mb-sm-0" id="inputEmail" type="email"
+                            placeholder="Enter email address..." />
+                        <button class="btn btn-primary mx-auto" type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="container">
+            <div class="row" class="contact-section bg-black">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card py-4 h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-map-marked-alt text-primary mb-2"></i>
+                            <h4 class="text-uppercase m-0">Address</h4>
+                            <hr class="my-4" />
+                            <div class="small text-black-50">4923 Market Street, Orlando FL</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card py-4 h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-envelope text-primary mb-2"></i>
+                            <h4 class="text-uppercase m-0">Email</h4>
+                            <hr class="my-4" />
+                            <div class="small text-black-50"><a href="#!">hello@yourdomain.com</a></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card py-4 h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-mobile-alt text-primary mb-2"></i>
+                            <h4 class="text-uppercase m-0">Phone</h4>
+                            <hr class="my-4" />
+                            <div class="small text-black-50">+1 (555) 902-8832</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="social d-flex justify-content-center">
+                <a class="mx-2" href="#!"><i class="fab fa-twitter"></i></a>
+                <a class="mx-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                <a class="mx-2" href="#!"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </section>
+    <!-- Footer-->
+    <footer class="footer bg-black small text-center text-white-50">
+        <div class="container">Copyright © Your Website 2020</div>
+    </footer>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Third party plugin JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <!-- Core theme JS-->
+    <!-- {{ url_for('static', filename='js/scripts.js') }} -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/authServices.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dataService.js') }}"></script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+<!-- <ion-card color="light" style="align-items: center; display: flex; flex-direction: column; cursor: pointer;"
+      *ngFor="let movie of Object.keys(movies.items)" (click)="openForm(movies.items[movie])">
+      <img src="../../../assets/movie_main_logo.jpg" />
+      <ion-card-header color="light">
+        {{movies.items[movie].id}}
+        <br>
+        <ion-card-subtitle>Title: {{movies.items[movie].title}}</ion-card-subtitle>
+        <br>
+        <ion-card-subtitle>Release date: {{movies.items[movie].release_date}}</ion-card-subtitle>
+        <br>
+        <ion-card-subtitle>Details: {{movies.items[movie].movie_details}}</ion-card-subtitle>
+      </ion-card-header> 
+      <ion-card-content>
+        <app-movie-graphic [movie]="movies.items[movie]"></app-movie-graphic>
+      </ion-card-content>
+    </ion-card> -->
+  
+  
