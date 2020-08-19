@@ -1,11 +1,11 @@
 import os
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, render_template
 from sqlalchemy import exc
 import json
 from flask_cors import CORS, cross_origin
 
-from models import setup_db, Movies, Actors
-from auth import AuthError, requires_auth
+from .models import setup_db, Movies, Actors
+from .auth import AuthError, requires_auth
 # heroku scale worker=1
 app = Flask(__name__)
 setup_db(app)
@@ -36,7 +36,7 @@ def after_request(response):
 @app.route('/')
 @cross_origin()
 def index():
-    return "<h1>Welcome to our server !!</h1>"
+    return render_template('../frontend/index.html', title='Home')
 
 
 # db_drop_and_create_all()
