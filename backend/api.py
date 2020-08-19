@@ -4,8 +4,8 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS, cross_origin
 
-from backend.models import setup_db, Movies, Actors
-from backend.auth import AuthError, requires_auth
+from models import setup_db, Movies, Actors
+from auth import AuthError, requires_auth
 # heroku scale worker=1
 app = Flask(__name__)
 setup_db(app)

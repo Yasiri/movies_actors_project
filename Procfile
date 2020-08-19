@@ -1,1 +1,1 @@
-web: gunicorn sh -c 'cd ./backend/ && exec api':app
+web: gunicorn sh -c 'cd ./backendh/ && exec api:app'
