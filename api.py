@@ -34,9 +34,9 @@ def after_request(response):
 
 # for testing
 @app.route('/')
-@cross_origin()
+# @cross_origin()
 def index():
-    return render_template('index.html',  data="movie"  )
+    return render_template('index.html')
 
 
 
