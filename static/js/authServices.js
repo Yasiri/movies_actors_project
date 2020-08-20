@@ -1,5 +1,5 @@
 // let tokenUrl = window.location.href.match(/\#(?:access_token)\=([\S\s]*?)\&/);
-tokenUrl = window.location.hash.substr(1).split("&")[0].split("=");
+
 // console.log('js tokenzzz 1111 ::: ', tokenUrl);
 var token = "";
 var payload = "";
@@ -9,7 +9,7 @@ const JWTS_ACTIVE_INDEX_KEY = "JWTS_ACTIVE_INDEX_KEY";
 
 $(function () {
   //   var tokenUrl = window.location.href.match(/[^\/]+$/);
-  console.log('im token ', tokenUrl)
+  tokenUrl = window.location.hash.substr(1).split("&")[0].split("=");
   check_token_fragment();
   let token = tokenUrl[1];
   console.log("token: ", token);
@@ -37,7 +37,6 @@ $(function () {
 
 const sendData = async (url, data, method) => {
   // Default options are marked with *
-  console.log('url ', url, 'data ', data, 'method ', method)
   const response = await fetch(url, {
     method, // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
@@ -113,7 +112,6 @@ function check_token_fragment() {
     // add the access token to the jwt
     this.token = fragment[1];
     console.log("test::::::: ========== ", this.token);
-    localStorage.setItem("token", this.token);
     // save jwts to localstore
     this.set_jwt();
   }
