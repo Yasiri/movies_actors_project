@@ -52,7 +52,7 @@ const sendData = async (url, data, method) => {
     // body: JSON.stringify(data) // body data type must match "Content-Type" header
     body: data,
   });
-  console.log("ressssiii: ", response);
+  console.log("ressssiii: ", response, 'data jjj ', data);
 
   return await response.json(); // parses JSON response into native JavaScript objects
 };
