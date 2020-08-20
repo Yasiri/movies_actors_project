@@ -41,7 +41,7 @@ def index():
 # for testing
 @app.route('/undefined')
 @cross_origin()
-def index():
+def indextest():
     return render_template('index.html',  data="movie"  )
 
 
