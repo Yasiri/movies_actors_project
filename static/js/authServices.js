@@ -39,7 +39,7 @@ $(function () {
 const sendData = async (url, data, method) => {
   // Default options are marked with *
   console.log('url ', url, 'data ', data, 'method ', method)
-  const response = await fetch(url, {
+  const response = fetch(url, {
     method, // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -52,7 +52,7 @@ const sendData = async (url, data, method) => {
     // body: JSON.stringify(data) // body data type must match "Content-Type" header
     body: data,
   });
-  console.log("ressssiii: ", response, 'data jjj ', data);
+  console.log("ressssiii: ", response);
 
   return await response.json(); // parses JSON response into native JavaScript objects
 };
