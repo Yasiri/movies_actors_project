@@ -113,6 +113,7 @@ function check_token_fragment() {
     // add the access token to the jwt
     this.token = fragment[1];
     console.log("test::::::: ========== ", this.token);
+    localStorage.setItem("token", this.token);
     // save jwts to localstore
     this.set_jwt();
   }
