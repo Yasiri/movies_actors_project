@@ -1,5 +1,5 @@
 // let tokenUrl = window.location.href.match(/\#(?:access_token)\=([\S\s]*?)\&/);
-
+tokenUrl = window.location.hash.substr(1).split("&")[0].split("=");
 // console.log('js tokenzzz 1111 ::: ', tokenUrl);
 var token = "";
 var payload = "";
@@ -9,7 +9,6 @@ const JWTS_ACTIVE_INDEX_KEY = "JWTS_ACTIVE_INDEX_KEY";
 
 $(function () {
   //   var tokenUrl = window.location.href.match(/[^\/]+$/);
-  tokenUrl = window.location.hash.substr(1).split("&")[0].split("=");
   console.log('im token ', tokenUrl)
   check_token_fragment();
   let token = tokenUrl[1];
@@ -39,7 +38,7 @@ $(function () {
 const sendData = async (url, data, method) => {
   // Default options are marked with *
   console.log('url ', url, 'data ', data, 'method ', method)
-  const response = fetch(url, {
+  const response = await fetch(url, {
     method, // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
