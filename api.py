@@ -38,6 +38,12 @@ def after_request(response):
 def index():
     return render_template('index.html',  data="movie"  )
 
+# for testing
+@app.route('/undefined')
+@cross_origin()
+def index():
+    return render_template('index.html',  data="movie"  )
+
 
 # db_drop_and_create_all()
 
