@@ -10,6 +10,7 @@ const JWTS_ACTIVE_INDEX_KEY = "JWTS_ACTIVE_INDEX_KEY";
 $(function () {
   //   var tokenUrl = window.location.href.match(/[^\/]+$/);
   tokenUrl = window.location.hash.substr(1).split("&")[0].split("=");
+  console.log('im token ', tokenUrl)
   check_token_fragment();
   let token = tokenUrl[1];
   console.log("token: ", token);
