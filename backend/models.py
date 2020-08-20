@@ -122,7 +122,35 @@ class Actors(db.Model):
     name = db.Column(db.String(80), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(6), nullable=False)
+    
+    
+    '''
+    short()
+        short form representation of the Movie model
+    '''
 
+    def short(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender
+        }
+
+    '''
+    long()
+        long form representation of the Movie model
+    '''
+
+    def long(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender
+        }
+        
+        
     def __repr__(self):
         return f"<Actor {self.id} {self.name} {self.age} {self.gender}>"
 

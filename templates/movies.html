@@ -2,49 +2,112 @@
 
 {% block movies %}
 <!-- Projects-->
+<script>
+    myVar = myFunc({{ data| tojson}})
+    function myFunc(vars) {
+        return vars;
+    }
+</script>
 <section class="projects-section bg-light" id="ViewMovies">
     <div class="container">
         <!-- Featured Project Row-->
-        <div class="row align-items-center no-gutters mb-4 mb-lg-5"> 
-            <div class="col-xl-8 col-lg-7"><img class="img-fluid mb-3 mb-lg-0" src="{{ url_for('static', filename='assets/img/bg-masthead.jpg') }}" alt="" /></div>
+        <div style="margin-left: 80px;" class="row justify-content-center no-gutters mb-4 mb-lg-5">
+            <div class="col-xl-4 col-lg-3">
+                <!-- <div class="mycard">
+                    <img src="{{ url_for('static', filename='assets/img/bg-masthead.jpg') }}" alt="Avatar"
+                        style="width:100%">
+                </div> -->
+                <!-- <img class="img-fluid mb-3 mb-lg-0" src="{{ url_for('static', filename='assets/img/bg-masthead.jpg') }}" alt="" /> -->
+            </div>
             <div class="col-xl-4 col-lg-5">
                 <div class="featured-text text-center text-lg-left">
-                    <h4>View Movies</h4>
-                    <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it for any project - even commercial projects! Download it, customize it, and publish your website!</p>
+                    <h4 style="margin-left: 80px;">View Movies</h4>
+                    <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it
+                        for any project - even commercial projects! Download it, customize it, and publish your website!
+                    </p>
                 </div>
-                <a  class="btn btn-primary text-center js-scroll-trigger" style="margin: 10px; margin-left: 100px;" href="#ViewMoviez">Add Movies</a>
-            </div>
-        </div>
-        <!-- Project One Row-->
-        <div class="row justify-content-center no-gutters mb-5 mb-lg-0"> 
-            <div class="col-lg-6"><img class="img-fluid" src="{{ url_for('static', filename='assets/img/demo-image-01.jpg') }}" alt="" /></div>
-            <div class="col-lg-6">
-                <div class="bg-black text-center h-100 project">
-                    <div class="d-flex h-100">
-                        <div class="project-text w-100 my-auto text-center text-lg-left">
-                            <h4 class="text-white">Misty</h4>
-                            <p class="mb-0 text-white-50">An example of where you can put an image of a project, or anything else, along with a description.</p>
-                            <hr class="d-none d-lg-block mb-0 ml-0" />
-                        </div>
+
+                <div id="myModal" class="modal">
+
+                    <!-- Modal content -->
+                    <div id="ex1" class="modal-content">
+                        <span class="close"></span>
+                        <p>Some text in the Modal..</p>
+                        <form action="/action_page.php">
+                            <label for="fname">Movie Title: </label>
+                            <input type="text" id="fname" name="fname"><br><br>
+                            <label for="lname">Release Date:</label>
+                            <input type="text" id="lname" name="lname"><br><br>
+                            Movie Details : <br />
+                            <textarea rows="5" cols="50" name="description">
+                                Enter description here...
+                            </textarea>
+                            <div class="btn-group">
+                                <a class="btn btn-primary text-center js-scroll-trigger"
+                                    style="margin: 10px; margin-left: 100px;" href="#ViewMoviez">
+                                    Save
+                                </a>
+                                <a class="btn btn-primary text-center js-scroll-trigger"
+                                    style="margin: 9px; margin-left: 2px;" href="#" rel="modal:close">
+                                    Cancel
+                                </a>
+                            </div>
+
+                            <!-- <input type="submit" formtarget="_blank" value="Submit to a new window/tab"> -->
+                        </form>
                     </div>
+
                 </div>
+                <!-- Modal HTML embedded directly into document -->
+                <!-- <div id="ex1" class="modal">
+                    <p>Thanks for clicking. That felt good.</p>
+                    <a href="#" rel="modal:close">Close</a>
+                </div> -->
+
+                <!-- Link to open the modal -->
+                <a class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;" href="#ex1"
+                    rel="modal:open">
+                    Add Movies
+                </a>
             </div>
         </div>
-        <!-- Project Two Row-->
-        <div class="row justify-content-center no-gutters"> 
-            <div class="col-lg-6"><img class="img-fluid" src="{{ url_for('static', filename='assets/img/demo-image-02.jpg') }}" alt="" /></div>
-            <div class="col-lg-6 order-lg-first">
-                <div class="bg-black text-center h-100 project">
-                    <div class="d-flex h-100">
-                        <div class="project-text w-100 my-auto text-center text-lg-right">
-                            <h4 class="text-white">Mountains</h4>
-                            <p class="mb-0 text-white-50">Another example of a project with its respective description. These sections work well responsively as well, try this theme on a small screen!</p>
-                            <hr class="d-none d-lg-block mb-0 mr-0" />
+        <div id="accordion" class="row justify-content-center no-gutters mb-5 mb-lg-0">
+        </div>
+        <script>
+            const container = document.getElementById('accordion');
+            myVar.forEach((result, idx) => {
+                // Create card element
+                const card = document.createElement('div');
+                card.classList = 'card-body';
+
+                // Construct card content
+                const content =
+                    `
+                <div class="col-xl-4 col-lg-3">
+                    <div class="mycard" style="margin: 10px;">
+                        <img style="display: block; margin-left: auto; margin-right: auto; width: 80%; height=50%" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar" style="width:50%">
+                        <div class="mycontainer">
+                            <h4>
+                                <b>title: ${result.title}</b>
+                            </h4>
+                                <p>release_date : ${result.release_date}</p>
+                                <p>${result.movie_details}</p>
+                            <h5 >
+                                <a class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;" href="#ex1"
+                    rel="modal:open">
+                   Edit
+                </a>
+                            </h5>
                         </div>
-                    </div>
+                    </div>   
                 </div>
-            </div>
-        </div>
+                `;
+
+                // Append newyly created card element to the container
+                container.innerHTML += content;
+            });
+
+        </script>
     </div>
 </section>
 {% endblock %}

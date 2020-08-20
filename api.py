@@ -36,7 +36,7 @@ def after_request(response):
 @app.route('/')
 @cross_origin()
 def index():
-    return render_template('index.html', title='Home')
+    return render_template('index.html',  data="movie"  )
 
 
 # db_drop_and_create_all()
@@ -60,15 +60,45 @@ def get_all_movies():
     # return 'im good'
     movies = Movies.query.all()
     movie = []
+    movieOjt = {}
+    movieArray = []
+    
     for m in movies:
-        movie.append(m.short())
+        movie = (m.short())
+        movieOjt = {
+            'id': m.id,
+            'title': m.title,
+            'release_date': m.release_date,
+            'movie_details': m.movie_details
+            }
+        movieArray.append(movieOjt)
+        
+            
+    print('ob ', movieArray)
+    return render_template('movies.html', data=movieArray)
+    # return jsonify({
+    #     'success': True,
+    #     'movies': movie
+    # }), 200
 
-    return jsonify({
-        'success': True,
-        'movies': movie
-    }), 200
 
+@app.route('/actors', methods=['GET'])
+@cross_origin()
+# @requires_auth('get:movies')
+def get_all_actors():
+    # return 'im good'
+    actors = Actors.query.all()
+    actor = []
+    for a in actors:
+        actor.append(a.short())
+    
+    return render_template('actors.html', data=actor)
+    # return jsonify({
+    #     'success': True,
+    #     'movies': movie
+    # }), 200
 
+    
 '''
 @ GET /movies-detail endpoint
     - it require the 'get:movies-detail' permission
