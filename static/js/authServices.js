@@ -38,6 +38,7 @@ $(function () {
 
 const sendData = async (url, data, method) => {
   // Default options are marked with *
+  console.log('url ', url, 'data ', data, 'method ', method)
   const response = await fetch(url, {
     method, // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
