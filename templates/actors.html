@@ -1,52 +1,192 @@
 {% extends 'base.html' %}
 
 {% block actors %}
- <!-- Projects-->
- <section class="projects-section bg-light" id="ViewActors">
+<!-- Projects-->
+<script>
+    savingid = '';
+    myVar = myFunc({{ data| tojson}})
+    permissions = localStorage.getItem("permsLength");
+    function myFunc(vars) {
+        return vars;
+    }
+    console.log('var ', myVar)
+</script>
+<section class="projects-section bg-light" id="ViewMovies">
     <div class="container">
         <!-- Featured Project Row-->
-       
-        <div class="row align-items-center no-gutters mb-4 mb-lg-5"> 
-            <div class="col-xl-8 col-lg-7"><img class="img-fluid mb-3 mb-lg-0" src="{{ url_for('static', filename='assets/img/bg-masthead.jpg') }}" alt="" /></div>
+        <div style="margin-left: 80px;" class="row justify-content-center no-gutters mb-4 mb-lg-5">
+            <div class="col-xl-4 col-lg-3">
+            </div>
             <div class="col-xl-4 col-lg-5">
                 <div class="featured-text text-center text-lg-left">
-                    <h4>View Actors</h4>
-                    <p class="text-black-50 mb-0">
-                        
-                        Grayscale is open source and MIT licensed. This means you can use it for any project - even commercial projects! Download it, customize it, and publish your website!</p>
+                    <h4 style="margin-left: 80px;">View Movies</h4>
+                    <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it
+                        for any project - even commercial projects! Download it, customize it, and publish your website!
+                    </p>
                 </div>
-            </div>
-        </div>
-        <!-- Project One Row-->
-        <div class="row justify-content-center no-gutters mb-5 mb-lg-0"> 
-            <div class="col-lg-6"><img class="img-fluid" src="{{ url_for('static', filename='assets/img/demo-image-01.jpg') }}" alt="" /></div>
-            <div class="col-lg-6">
-                <div class="bg-black text-center h-100 project">
-                    <div class="d-flex h-100">
-                        <div class="project-text w-100 my-auto text-center text-lg-left">
-                            <h4 class="text-white">Misty</h4>
-                            <p class="mb-0 text-white-50">An example of where you can put an image of a project, or anything else, along with a description.</p>
-                            <hr class="d-none d-lg-block mb-0 ml-0" />
-                        </div>
+                <div id="myModal" class="modal">
+                    <!-- Modal content -->
+                    <div id="addModal" class="modal-content">
+                        <span class="close"></span>
+                        <p>Some text in the Modal..</p>
+                        <form id="formElem" onsubmit="event.preventDefault(); postActor()">
+                            <label for="name">Name: </label>
+                            <input type="text" id="name" name="name"><br><br>
+                            <label for="age">Age:</label>
+                            <input type="text" id="age" name="age"><br><br>
+                            Gender : <br />
+                            <textarea rows="5" cols="50" name="gender"
+                                placeholder="Enter description here..."></textarea>
+                            <div class="btn-group">
+                                <button class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;">
+                                    Save
+                                </button>
+                                <button class="btn btn-primary text-center" style="margin: 9px; margin-left: 2px;"
+                                    href="#" rel="modal:close">
+                                    Cancel
+                                </button>
+                            </div>
+                            <!-- <input type="submit" formtarget="_blank" value="Submit to a new window/tab"> -->
+                        </form>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Project Two Row-->
-        <div class="row justify-content-center no-gutters"> 
-            <div class="col-lg-6"><img class="img-fluid" src="{{ url_for('static', filename='assets/img/demo-image-02.jpg') }}" alt="" /></div>
-            <div class="col-lg-6 order-lg-first">
-                <div class="bg-black text-center h-100 project">
-                    <div class="d-flex h-100">
-                        <div class="project-text w-100 my-auto text-center text-lg-right">
-                            <h4 class="text-white">Mountains</h4>
-                            <p class="mb-0 text-white-50">Another example of a project with its respective description. These sections work well responsively as well, try this theme on a small screen!</p>
-                            <hr class="d-none d-lg-block mb-0 mr-0" />
-                        </div>
+                <div id="myeditModal" class="modaledit">
+                    <!-- Modal content -->
+                    <div id="editModal" class="modaledit-content">
+                        <span class="close"></span>
+                        <p>Edit text in the Modal..</p>
+                        <form id="formElemEdit" onsubmit="event.preventDefault(); saveing(savingid)">
+                            <label for="name">Name: </label>
+                            <input type="text" id="name" name="name"><br><br>
+                            <label for="age">Age:</label>
+                            <input type="text" id="age" name="age"><br><br>
+                            Gender : <br />
+                            <textarea rows="5" cols="50" name="gender"
+                                placeholder="Enter description here..."></textarea>
+                            <div class="btn-group">
+                                <button id="save" class="btn btn-primary text-center"
+                                    style="margin: 10px; margin-left: 100px;">
+                                    Save
+                                </button>
+                                <button class="btn btn-primary text-center" style="margin: 9px; margin-left: 2px;"
+                                    href="#" rel="modaledit:close">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+                <!-- Link to open the modal -->
+                <a id="save" class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;"
+                    href="#addModal" rel="modal:open">
+                    Add Act(or/ress)
+                </a>
             </div>
         </div>
+        <div id="actorCards" class="row justify-content-center no-gutters mb-5 mb-lg-0">
+        </div>
+        <script>
+            const container = document.getElementById('actorCards');
+            myVar.forEach((result, idx) => {
+                console.log('age ', result.age)
+                // Create card element
+                const card = document.createElement('div');
+                card.classList = 'card-body';
+                // Construct card content
+                const content = `
+                <div class="col-xl-4 col-lg-3">
+                    <div class="mycard" style="margin: 10px;">
+                        <img style="display: block; margin-left: auto; margin-right: auto; width: 80%; height=50%" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar" style="width:50%">
+                        <div class="mycontainer">
+                            <h4>
+                                <b>name: ${result.actorName}</b>
+                            </h4>
+                                <p>age : ${result.age}</p>
+                                <p>${result.gender}</p>
+                            <div  class="col-xl-4 col-lg-5">
+                                <div id="editDel" class="btn-group">
+                                    <a id="edit" class="editButton" href="#editModal" rel="modal:open" onclick="geteditActordata('${result.id}','${result.actorName}', '${result.age}', '${result.gender}')">
+                                        Edit
+                                    </a>
+                                    <a  id="delete" class="deleteButton" href="#addModal" style="margin-left: 70px" onclick="deleteActor(${result.id})">
+                                        Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>   
+                </div>
+                `;
+                // Append newyly created card element to the container
+                container.innerHTML += content;
+                if (permissions <= 2) {
+                    var editButton = document.getElementById("actorCards").querySelectorAll("#edit");
+                    var deleteButton = document.getElementById("actorCards").querySelectorAll("#delete");
+                    editButton.forEach(ed => {
+                        ed.remove()
+                    });
+                    deleteButton.forEach(ed => {
+                        ed.remove()
+                    });
+                    disableaddButton();
+                }
+            });
+            function disableaddButton() {
+                try {
+                    $(document).ready(function () {
+                        $("#save").remove();
+                    });
+                } catch (err) {
+                    console.log('error ', err)
+                }
+  
+            }
+        </script>
+        <script>
+            var myid = '';
+            async function geteditActordata(id, name, age, gender) {
+                console.log('age 2', age)
+                myid = id
+                savingid = id;
+                formElemEdit.elements["name"].value = name;
+                formElemEdit.elements["age"].value = age;
+                formElemEdit.elements["gender"].value = gender;
+                if (event.target.id === 'edit') {
+                    console.log(event.target.href);
+                }
+                else {
+                    console.log('saveing...')
+                    savingid = id;
+                }
+            };
+            async function saveing(id) {
+                name = formElemEdit.elements["name"].value;
+                age = formElemEdit.elements["age"].value;
+                gender = formElemEdit.elements["gender"].value;
+                dataObj = {
+                    name: name,
+                    age: age,
+                    gender: gender,
+                };
+                postdata = [];
+                postdata.push(dataObj);
+                const data = await sendData(`/actors/${id}`, postdata, "PATCH");
+                try {
+                    // const data = await sendData(`/movies/${id}`, postdata, "PATCH");
+                    if (data.success) {
+                        location.href = "/actors";
+                    } else {
+                        throw data.message;
+                    }
+                } catch (error) {
+                    iziToast.error({
+                        title: "Error",
+                        message: error,
+                    });
+                }
+            }
+  
+        </script>
     </div>
-</section>
+  </section>
 {% endblock %}

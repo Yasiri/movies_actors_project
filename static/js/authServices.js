@@ -1,144 +1,198 @@
 // let tokenUrl = window.location.href.match(/\#(?:access_token)\=([\S\s]*?)\&/);
-
-// console.log('js tokenzzz 1111 ::: ', tokenUrl);
 var token = "";
 var payload = "";
 var tokenUrl = "";
+let permissions;
 const JWTS_LOCAL_KEY = "JWTS_LOCAL_KEY";
 const JWTS_ACTIVE_INDEX_KEY = "JWTS_ACTIVE_INDEX_KEY";
 
 $(function () {
-  //   var tokenUrl = window.location.href.match(/[^\/]+$/);
   tokenUrl = window.location.hash.substr(1).split("&")[0].split("=");
   check_token_fragment();
-  let token = tokenUrl[1];
-  console.log("token: ", token);
-  console.log("tokenUrl: ", tokenUrl);
+  token = localStorage.getItem("JWTS_LOCAL_KEY");
   localStorage.setItem("token", token);
-  if (token === null) {
-    hideOnLogin();
+
+  if (token === null || token === undefined) {
+    permissions = []// ["get:movies", "get:actors"]; // default permissions
+    // localStorage.setItem("permissions", permissions);
+    localStorage.setItem("loggedIn", false);
+    localStorage.setItem("permsLength", permissions.length);
+    hideOnLogin(permissions);
   } else {
-    // try {
-    //   let permissions;
-    //   permissions = JSON.parse(atob(token.split(".")[1])).permissions;
-    //   localStorage.setItem("permissions", permissions);
-    //   console.log("permissions: ", permissions);
-    //   if (!localStorage.getItem("permissions")) {
-    //     permissions = ["read:movies", "read:actors"]; // default permissions
-    //     localStorage.setItem("permissions", permissions);
-    //   }
-    // } catch (e) {
-    //   console.log("E: ", e);
-    // }
-    hideOnLogin();
+    try {
+      localStorage.setItem("loggedIn", true);
+      permissions = JSON.parse(atob(token.split(".")[1])).permissions;
+      localStorage.setItem("permissions", permissions);
+      localStorage.setItem("permsLength", permissions.length);
+      if (!localStorage.getItem("permissions")) {
+        permissions = ["get:movies", "get:actors"]; // default permissions
+        localStorage.setItem("permissions", permissions);
+      }
+    } catch (e) {
+      console.log("E: ", e);
+    }
+    hideOnLogin(permissions);
     // sendData();
   }
 });
-
-// const sendData = async (url, data, method) => {
-//   // Default options are marked with *
-//   const response = await fetch(url, {
-//     method, // *GET, POST, PUT, DELETE, etc.
-//     mode: "cors", // no-cors, *cors, same-origin
-//     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-//     credentials: "same-origin", // include, *same-origin, omit
-//     headers: new Headers({
-//       Authorization: `Bearer ${localStorage.getItem("token")}`,
-//     }),
-//     redirect: "follow", // manual, *follow, error
-//     referrer: "no-referrer", // no-referrer, *client
-//     // body: JSON.stringify(data) // body data type must match "Content-Type" header
-//     body: data,
-//   });
-//   console.log("ressssiii: ", response);
-
-//   return await response.json(); // parses JSON response into native JavaScript objects
-// };
-function hideOnLogin() {
-  console.log("yess ", localStorage.getItem("permissions"));
-  if (
-    (localStorage.getItem("token") && localStorage.getItem("permissions")) !==
-    null
-  ) {
-    hideSign_inup();
-    if (localStorage) {
-      //if local storage
-      if (!localStorage.getItem("loggedIn")) {
-        hideView_AM();
-      }
+// delete movie
+async function deleteMovie(movieId) {
+  try {
+    const data = await sendData(`/movies/${movieId}`, "", "DELETE");
+    if (data.success) {
+      location.reload();
+      location.href = "/movies#ViewMovies";
+    } else {
+      throw data.message;
     }
-  } else if (
-    localStorage.getItem("token") &&
-    localStorage.getItem("permissions") === null
-  ) {
-    hideView_AM();
-    if (localStorage) {
-      //if local storage
-      if (!localStorage.getItem("loggedOut")) {
-        hideSign_inup();
-      }
-    }
-    // document.getElementById("ManageCasting").remove();
+  } catch (error) {
+    iziToast.error({
+      title: "Error",
+      message: error,
+    });
   }
 }
-function hideSign_inup() {
-  console.log("here i am ");
-  document.getElementById("ManageCastingtitle").innerHTML = "Manage Casting";
-  document.getElementById("about_in_login").remove();
-  document.getElementById("about").remove();
-  document.getElementById("signin_signup").remove();
-  document.getElementById("loginBtn").remove();
-  // document.getElementById("signUpBtn").remove();
-  localStorage.setItem("loggedIn", true);
+async function postMovie() {
+  title = formElem.elements["title"].value;
+  Release = formElem.elements["Release"].value;
+  Details = formElem.elements["Details"].value;
+  dataObj = {
+    title: title,
+    Release: Release,
+    Details: Details,
+  };
+  postdata = [];
+  postdata.push(dataObj);
+  try {
+    const data = await sendData("/movies", postdata, "POST");
+    if (data.success) {
+      location.reload();
+      location.href = "/movies#ViewMovies";
+    } else {
+      throw data.message;
+    }
+  } catch (error) {
+    iziToast.error({
+      title: "Error",
+      message: error,
+    });
+  }
 }
-function hideView_AM() {
-  console.log("here i am 2");
-  document.getElementById("ManageCastingtitle").innerHTML =
-    "login or signup to Manage Casting";
+async function postActor() {
+  name = formElem.elements["name"].value;
+  age = formElem.elements["age"].value;
+  gender = formElem.elements["gender"].value;
+  dataObj = {
+    actorName: name,
+    age: age,
+    gender: gender,
+  };
+  postdata = [];
+  postdata.push(dataObj);
 
-  document.getElementById("logoutBtn").remove();
-  document.getElementById("ViewMoviez").remove();
-  document.getElementById("viewActorz").remove();
-  document.getElementById("hideViewActors").remove();
-  document.getElementById("hideViewMovies").remove();
-  localStorage.setItem("loggedOut", true);
+  try {
+    const data = await sendData("/actors", postdata, "POST");
+    if (data.success) {
+      location.reload();
+      location.href = "/actors#ViewActors";
+    } else {
+      throw data.message;
+    }
+  } catch (error) {
+    iziToast.error({
+      title: "Error",
+      message: error,
+    });
+  }
+}
+async function deleteActor(actorId) {
+  try {
+    const data = await sendData(`/actors/${actorId}`, "", "DELETE");
+    if (data.success) {      
+      location.reload();
+      location.href = "/actors#ViewActors";
+    } else {
+      throw data.message;
+    }
+  } catch (error) {
+    iziToast.error({
+      title: "Error",
+      message: error,
+    });
+  }
+}
+
+const sendData = async (url, data, method) => {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method,
+    mode: "cors",
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: new Headers({
+      Authorization: `Bearer ${localStorage.getItem("JWTS_LOCAL_KEY")}`,
+      "Content-Type": "application/json",
+    }),
+    redirect: "follow",
+    referrer: "no-referrer",
+    body: JSON.stringify(data),
+  });
+
+  return await response.json(); // parses JSON response into native JavaScript objects
+};
+myVar = localStorage.getItem("permissions");
+
+function hideOnLogin(permissions) {
+  if (permissions.length >= 2) {
+    localStorage.setItem("loggedIn", true);
+    document.getElementById("signin_signup").remove();
+    document.getElementById("ManageCastingtitle").innerHTML = "Manage Casting";
+    document.getElementById("loginBtn").remove();
+  } 
+  else if (permissions.length < 2){
+    localStorage.setItem("loggedIn", false);
+    document.getElementById("logoutBtn").remove();
+    document.getElementById("viewActorz").remove();
+    document.getElementById("ViewMoviez").remove();
+    document.getElementById("ManageCastingtitle").innerHTML =
+      "login or signup to Manage Casting";
+  }
 }
 
 function check_token_fragment() {
   // parse the fragment
-  const fragment = tokenUrl; //window.location.hash.substr(1).split("&")[0].split("=");
+  const fragment = tokenUrl;
   // check if the fragment includes the access token
   if (fragment[0] === "access_token") {
     // add the access token to the jwt
-    this.token = fragment[1];
-    console.log("test::::::: ========== ", this.token);
+    token = fragment[1];
+    localStorage.setItem(JWTS_LOCAL_KEY, token);
     // save jwts to localstore
-    this.set_jwt();
+    set_jwt();
+  } else if (fragment[0] === "ViewMovies") {
+    token = localStorage.getItem(JWTS_LOCAL_KEY);
+    set_jwt();
   }
 }
 
 function set_jwt() {
-  localStorage.setItem(JWTS_LOCAL_KEY, this.token);
-  if (this.token) {
-    this.decodeJWT(this.token);
+  if (token) {
+    decodeJWT(token);
   }
 }
 
 function load_jwts() {
-  this.token = localStorage.getItem(JWTS_LOCAL_KEY) || null;
-  if (this.token) {
-    this.decodeJWT(this.token);
+  token = localStorage.getItem(JWTS_LOCAL_KEY) || null;
+  if (token) {
+    decodeJWT(token);
   }
 }
 
 function activeJWT() {
-  return this.token;
+  return token;
 }
 
 function decodeJWT(token) {
-  //   const jwtservice = new JwtHelperService();
-  //   this.payload = jwtservice.decodeToken(token);
-  //   return this.payload;
   var base64Url = token.split(".")[1];
   var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   var jsonPayload = decodeURIComponent(
@@ -149,20 +203,16 @@ function decodeJWT(token) {
       })
       .join("")
   );
-  console.log("JSON:::: ", JSON.parse(jsonPayload));
-  this.payload = JSON.parse(jsonPayload);
-  localStorage.setItem("permissions", this.payload.permissions);
-
-  // var setsession = window.sessionStorage.setItem("animals", this.payload);
-  // var getsession = window.sessionStorage.getItem("animals");
-  // console.log("getsession ", getsession);
-  return this.payload;
+  payload = JSON.parse(jsonPayload);
+  localStorage.setItem("permissions", payload.permissions);
+  return payload;
 }
 
 const logOut = () => {
-  this.token = "";
-  this.payload = null;
-  this.set_jwt();
+  token = "";
+  payload = null;
+  permissions = '';
+  set_jwt();
   localStorage.clear();
   window.location.href = "https://fsndy.auth0.com/v2/logout";
 };

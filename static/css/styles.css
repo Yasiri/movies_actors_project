@@ -5504,7 +5504,209 @@ a.close.disabled {
 .toast-body {
   padding: 0.75rem;
 }
+/* modaledit */
+.modaledit-open {
+  overflow: hidden;
+}
+.modaledit-open .modaledit {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 
+.modaledit {
+  position: relative !important;
+  top: 38% !important;
+  transform: translateY(-50%);
+  vertical-align: middle !important ;
+  /* position: fixed !important; */
+  top: 0;
+  left: 0;
+  z-index: 1050 !important;
+  display: none;
+  width: 100%;
+  height: 61%;
+  overflow: hidden;
+  outline: 0;
+}
+
+.modaledit-dialog {
+  position: relative;
+  width: auto;
+  margin: 0.5rem;
+  pointer-events: none;
+}
+.modaledit.fade .modaledit-dialog {
+  transition: transform 0.3s ease-out;
+  transform: translate(0, -50px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .modaledit.fade .modaledit-dialog {
+    transition: none;
+  }
+}
+.modaledit.show .modaledit-dialog {
+  transform: none;
+}
+.modaledit.modaledit-static .modaledit-dialog {
+  transform: scale(1.02);
+}
+
+.modaledit-dialog-scrollable {
+  display: flex;
+  max-height: calc(100% - 1rem);
+}
+.modaledit-dialog-scrollable .modaledit-content {
+  max-height: calc(100vh - 1rem);
+  overflow: hidden;
+}
+.modaledit-dialog-scrollable .modaledit-header,
+.modaledit-dialog-scrollable .modaledit-footer {
+  flex-shrink: 0;
+}
+.modaledit-dialog-scrollable .modaledit-body {
+  overflow-y: auto;
+}
+
+.modaledit-dialog-centered {
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 1rem);
+}
+.modaledit-dialog-centered::before {
+  display: block;
+  height: calc(100vh - 1rem);
+  height: -webkit-min-content;
+  height: -moz-min-content;
+  height: min-content;
+  content: "";
+}
+.modaledit-dialog-centered.modaledit-dialog-scrollable {
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+.modaledit-dialog-centered.modaledit-dialog-scrollable .modaledit-content {
+  max-height: none;
+}
+.modaledit-dialog-centered.modaledit-dialog-scrollable::before {
+  content: none;
+}
+
+.modaledit-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  outline: 0;
+}
+
+.modaledit-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1040;
+  width: 100vw;
+  height: 100vh;
+  background-color: #e61414;
+}
+.modaledit-backdrop.fade {
+  opacity: 0;
+}
+.modaledit-backdrop.show {
+  opacity: 0.5;
+}
+
+.modaledit-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  border-top-left-radius: calc(0.3rem - 1px);
+  border-top-right-radius: calc(0.3rem - 1px);
+}
+.modaledit-header .close {
+  padding: 1rem 1rem;
+  margin: -1rem -1rem -1rem auto;
+}
+
+.modaledit-title {
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.modaledit-body {
+  position: relative;
+  flex: 1 1 auto;
+  padding: 1rem;
+}
+
+.modaledit-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.75rem;
+  border-top: 1px solid #dee2e6;
+  border-bottom-right-radius: calc(0.3rem - 1px);
+  border-bottom-left-radius: calc(0.3rem - 1px);
+}
+.modaledit-footer > * {
+  margin: 0.25rem;
+}
+
+.modaledit-scrollbar-measure {
+  position: absolute;
+  top: -9999px;
+  width: 50px;
+  height: 50px;
+  overflow: scroll;
+}
+
+@media (min-width: 576px) {
+  .modaledit-dialog {
+    max-width: 500px;
+    margin: 1.75rem auto;
+  }
+
+  .modaledit-dialog-scrollable {
+    max-height: calc(100% - 3.5rem);
+  }
+  .modaledit-dialog-scrollable .modaledit-content {
+    max-height: calc(100vh - 3.5rem);
+  }
+
+  .modaledit-dialog-centered {
+    min-height: calc(100% - 3.5rem);
+  }
+  .modaledit-dialog-centered::before {
+    height: calc(100vh - 3.5rem);
+    height: -webkit-min-content;
+    height: -moz-min-content;
+    height: min-content;
+  }
+
+  .modaledit-sm {
+    max-width: 300px;
+  }
+}
+@media (min-width: 992px) {
+  .modaledit-lg,
+.modaledit-xl {
+    max-width: 800px;
+  }
+}
+@media (min-width: 1200px) {
+  .modaledit-xl {
+    max-width: 1140px;
+  }
+}
+/* modal */
 .modal-open {
   overflow: hidden;
 }

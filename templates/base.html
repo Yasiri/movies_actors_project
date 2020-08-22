@@ -23,8 +23,10 @@
     <!-- jQuery Modal -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"
+        integrity="sha256-321PxS+POvbvWcIVoRZeRmf32q7fTFQJ21bXwTNWREY=" crossorigin="anonymous"></script>
 </head>
-
 <body>
     <div>
         <nav class="navbar navbar-expand-lg navbar-light fixed-top navbar-shrink" id="mainNav">
@@ -50,12 +52,13 @@
                             <a class="nav-link js-scroll-trigger" href="/actors#ViewActors">View Actors</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" href="#ContactUS">Contact US</a> 
+                            <a class="nav-link js-scroll-trigger" href="#ContactUS">Contact US</a>
                         </li>
                         <li id="signin_signup" class="nav-item">
                             <a class="nav-link js-scroll-trigger"
-                                href="https://fsndy.auth0.com/authorize?audience=CapstonApi&response_type=token&client_id=MYU8Nk5ejGzrMzHg5qiDEBAodXoaS0DU&redirect_uri=https://fsnd-movie-project.herokuapp.com">login/signup</a>
-                                <!-- http://127.0.0.1:5000 -->
+                                href="https://fsndy.auth0.com/authorize?audience=CapstonApi&response_type=token&client_id=MYU8Nk5ejGzrMzHg5qiDEBAodXoaS0DU&redirect_uri=http://127.0.0.1:5000">login/signup</a>
+                            <!-- http://127.0.0.1:5000 -->
+                            <!-- https://fsnd-movie-project.herokuapp.com -->
                         </li>
                         <li id="logoutBtn" class="nav-item"><a class="nav-link js-scroll-trigger" disabled
                                 onclick="logOut()">logout</a></li>
@@ -176,5 +179,4 @@
     <script src="{{ url_for('static', filename='js/authServices.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dataService.js') }}"></script>
 </body>
-
 </html>

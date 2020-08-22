@@ -5,18 +5,14 @@ import json
 import psycopg2
 
 # # for heroku deployment
-database_path = os.environ['DATABASE_URL']
-conn = psycopg2.connect(database_path, sslmode='require')
+# database_path = os.environ['DATABASE_URL']
+# conn = psycopg2.connect(database_path, sslmode='require')
 
 # for testing locally
-# database_name = "capstoon"
-# database_path = "postgresql://{}:{}@{}/{}".format(
-#     'yaser', 'yaser', 'localhost:5432', database_name)
+database_name = "capstoon"
+database_path = "postgresql://{}:{}@{}/{}".format(
+    'yaser', 'yaser', 'localhost:5432', database_name)
 
-# database_filename = "capstoon"
-# project_dir = os.path.dirname(os.path.abspath(__file__))
-# database_path = "sqlite:///{}".format(
-#     os.path.join(project_dir, database_filename))
 
 db = SQLAlchemy()
 
@@ -29,15 +25,14 @@ setup_db(app)
 def setup_db(app):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config['SECRET_KEY'] = 'GDtfDCFYjD'
     db.app = app
     db.init_app(app)
     db.create_all()
 
 
 '''
-
 Movies
-
 '''
 # db.Model.metadata
 M_A_association = db.Table(
@@ -47,6 +42,10 @@ M_A_association = db.Table(
     db.Column('actor_id', db.Integer,
               db.ForeignKey('actors.id'), primary_key=True)
 )
+
+# ----------------------------------------------------------------------------#
+# Models. Movies & Actors
+# ----------------------------------------------------------------------------#
 
 
 class Movies(db.Model):
@@ -119,11 +118,10 @@ class Actors(db.Model):
     __tablename__ = "actors"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
+    actorName = db.Column(db.String(80), nullable=True)
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(6), nullable=False)
-    
-    
+
     '''
     short()
         short form representation of the Movie model
@@ -132,7 +130,7 @@ class Actors(db.Model):
     def short(self):
         return {
             'id': self.id,
-            'name': self.name,
+            'actorName': self.actorName,
             'age': self.age,
             'gender': self.gender
         }
@@ -145,20 +143,18 @@ class Actors(db.Model):
     def long(self):
         return {
             'id': self.id,
-            'name': self.name,
+            'actorName': self.actorName,
             'age': self.age,
             'gender': self.gender
         }
-        
-        
-    def __repr__(self):
-        return f"<Actor {self.id} {self.name} {self.age} {self.gender}>"
 
-    def __init__(self, title, release_date):
-        self.name = name
+    def __repr__(self):
+        return f"<Actor {self.id} {self.actorName} {self.age} {self.gender}>"
+
+    def __init__(self, actorName, age, gender):
+        self.actorName = actorName
         self.age = age
         self.gender = gender
-        self.movies = movies
 
     def insert(self):
         db.session.add(self)
@@ -168,7 +164,6 @@ class Actors(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    @ staticmethod
     def update():
         db.session.commit()
 
@@ -176,11 +171,7 @@ class Actors(db.Model):
         """returns a formatted response of the data in the model"""
         return {
             'id': self.id,
-            'name': self.name,
+            'actorName': self.actorName,
             'age': self.age,
             'gender': self.gender
         }
-
-# ----------------------------------------------------------------------------#
-# Models. Movies & Actors
-# ----------------------------------------------------------------------------#

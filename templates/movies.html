@@ -3,22 +3,18 @@
 {% block movies %}
 <!-- Projects-->
 <script>
+    savingid = '';
     myVar = myFunc({{ data| tojson}})
+    permissions = localStorage.getItem("permsLength");
     function myFunc(vars) {
         return vars;
     }
-    console.log('yasser ', myVar);
 </script>
 <section class="projects-section bg-light" id="ViewMovies">
     <div class="container">
         <!-- Featured Project Row-->
         <div style="margin-left: 80px;" class="row justify-content-center no-gutters mb-4 mb-lg-5">
             <div class="col-xl-4 col-lg-3">
-                <!-- <div class="mycard">
-                    <img src="{{ url_for('static', filename='assets/img/bg-masthead.jpg') }}" alt="Avatar"
-                        style="width:100%">
-                </div> -->
-                <!-- <img class="img-fluid mb-3 mb-lg-0" src="{{ url_for('static', filename='assets/img/bg-masthead.jpg') }}" alt="" /> -->
             </div>
             <div class="col-xl-4 col-lg-5">
                 <div class="featured-text text-center text-lg-left">
@@ -27,63 +23,74 @@
                         for any project - even commercial projects! Download it, customize it, and publish your website!
                     </p>
                 </div>
-
                 <div id="myModal" class="modal">
-
                     <!-- Modal content -->
-                    <div id="ex1" class="modal-content">
+                    <div id="addModal" class="modal-content">
                         <span class="close"></span>
                         <p>Some text in the Modal..</p>
-                        <form action="/action_page.php">
-                            <label for="fname">Movie Title: </label>
-                            <input type="text" id="fname" name="fname"><br><br>
-                            <label for="lname">Release Date:</label>
-                            <input type="text" id="lname" name="lname"><br><br>
+                        <form id="formElem" onsubmit="event.preventDefault(); postMovie()">
+                            <label for="title">Movie Title: </label>
+                            <input type="text" id="title" name="title"><br><br>
+                            <label for="Release">Release Date:</label>
+                            <input type="text" id="Release" name="Release"><br><br>
                             Movie Details : <br />
-                            <textarea rows="5" cols="50" name="description">
-                                Enter description here...
-                            </textarea>
+                            <textarea rows="5" cols="50" name="Details"
+                                placeholder="Enter description here..."></textarea>
                             <div class="btn-group">
-                                <a class="btn btn-primary text-center js-scroll-trigger"
-                                    style="margin: 10px; margin-left: 100px;" href="#ViewMoviez">
+                                <button class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;">
                                     Save
-                                </a>
-                                <a class="btn btn-primary text-center js-scroll-trigger"
-                                    style="margin: 9px; margin-left: 2px;" href="#" rel="modal:close">
+                                </button>
+                                <button class="btn btn-primary text-center" style="margin: 9px; margin-left: 2px;"
+                                    href="#" rel="modal:close">
                                     Cancel
-                                </a>
+                                </button>
                             </div>
-
-                            <!-- <input type="submit" formtarget="_blank" value="Submit to a new window/tab"> -->
                         </form>
                     </div>
-
                 </div>
-                <!-- Modal HTML embedded directly into document -->
-                <!-- <div id="ex1" class="modal">
-                    <p>Thanks for clicking. That felt good.</p>
-                    <a href="#" rel="modal:close">Close</a>
-                </div> -->
-
+                <div id="myeditModal" class="modaledit">
+                    <!-- Modal content -->
+                    <div id="editModal" class="modaledit-content">
+                        <span class="close"></span>
+                        <p>Edit text in the Modal..</p>
+                        <form id="formElemEdit" onsubmit="event.preventDefault(); saveing(savingid)">
+                            <label for="title">Movie Title: </label>
+                            <input type="text" id="title" name="title"><br><br>
+                            <label for="Release">Release Date:</label>
+                            <input type="text" id="Release" name="Release"><br><br>
+                            Movie Details : <br />
+                            <textarea rows="5" cols="50" name="Details"
+                                placeholder="Enter description here..."></textarea>
+                            <div class="btn-group">
+                                <button id="save" class="btn btn-primary text-center"
+                                    style="margin: 10px; margin-left: 100px;">
+                                    Save
+                                </button>
+                                <button class="btn btn-primary text-center" style="margin: 9px; margin-left: 2px;"
+                                    href="#" rel="modaledit:close">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <!-- Link to open the modal -->
-                <a class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;" href="#ex1"
-                    rel="modal:open">
+                <a id="save" class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;"
+                    href="#addModal" rel="modal:open">
                     Add Movies
                 </a>
             </div>
         </div>
-        <div id="accordion" class="row justify-content-center no-gutters mb-5 mb-lg-0">
+        <div id="movieCards" class="row justify-content-center no-gutters mb-5 mb-lg-0">
         </div>
         <script>
-            const container = document.getElementById('accordion');
+            const container = document.getElementById('movieCards');
             myVar.forEach((result, idx) => {
                 // Create card element
                 const card = document.createElement('div');
                 card.classList = 'card-body';
-
                 // Construct card content
-                const content =
-                    `
+                const content = `
                 <div class="col-xl-4 col-lg-3">
                     <div class="mycard" style="margin: 10px;">
                         <img style="display: block; margin-left: auto; margin-right: auto; width: 80%; height=50%" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar" style="width:50%">
@@ -93,20 +100,87 @@
                             </h4>
                                 <p>release_date : ${result.release_date}</p>
                                 <p>${result.movie_details}</p>
-                            <h5 >
-                                <a class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;" href="#ex1"
-                    rel="modal:open">
-                   Edit
-                </a>
-                            </h5>
+                            <div  class="col-xl-4 col-lg-5">
+                                <div id="editDel" class="btn-group">
+                                    <a id="edit" class="editButton" href="#editModal" rel="modal:open" onclick="geteditMoviedata('${result.id}','${result.title}', '${result.release_date}', '${result.movie_details}')">
+                                        Edit
+                                    </a>
+                                    <a  id="delete" class="deleteButton" href="#addModal" style="margin-left: 70px" onclick="deleteMovie(${result.id})">
+                                        Delete
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>   
                 </div>
                 `;
-
                 // Append newyly created card element to the container
                 container.innerHTML += content;
+                if (permissions <= 2) {
+                    var editButton = document.getElementById("movieCards").querySelectorAll("#edit");
+                    var deleteButton = document.getElementById("movieCards").querySelectorAll("#delete");
+                    editButton.forEach(ed => {
+                        ed.remove()
+                    });
+                    deleteButton.forEach(ed => {
+                        ed.remove()
+                    });
+                    disableaddButton();
+                }
             });
+            function disableaddButton() {
+                try {
+                    $(document).ready(function () {
+                        $("#save").remove();
+                    });
+                } catch (err) {
+                    console.log('error ', err)
+                }
+
+            }
+        </script>
+        <script>
+            var myid = '';
+            async function geteditMoviedata(id, title, release_date, movie_details) {
+                myid = id
+                savingid = id;
+                formElemEdit.elements["title"].value = title;
+                formElemEdit.elements["Release"].value = release_date;
+                formElemEdit.elements["Details"].value = movie_details;
+                if (event.target.id === 'edit') {
+                    pass;
+                }
+                else {
+                    console.log('saveing...')
+                    savingid = id;
+                }
+            };
+            async function saveing(id) {
+                title = formElemEdit.elements["title"].value;
+                Release = formElemEdit.elements["Release"].value;
+                Details = formElemEdit.elements["Details"].value;
+                dataObj = {
+                    title: title,
+                    Release: Release,
+                    Details: Details,
+                };
+                postdata = [];
+                postdata.push(dataObj);
+                const data = await sendData(`/movies/${id}`, postdata, "PATCH");
+                try {
+                    // const data = await sendData(`/movies/${id}`, postdata, "PATCH");
+                    if (data.success) {
+                        location.href = "/movies";
+                    } else {
+                        throw data.message;
+                    }
+                } catch (error) {
+                    iziToast.error({
+                        title: "Error",
+                        message: error,
+                    });
+                }
+            }
 
         </script>
     </div>

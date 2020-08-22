@@ -1,5 +1,7 @@
 import os
-from flask import Flask, request, jsonify, abort, render_template
+from flask import (
+    Flask, request, jsonify, abort,
+    render_template, session, escape)
 from sqlalchemy import exc
 import json
 from flask_cors import CORS, cross_origin
@@ -8,20 +10,19 @@ from backend.models import setup_db, Movies, Actors
 from backend.auth import AuthError, requires_auth
 # heroku scale worker=1
 app = Flask(__name__)
+app.secret_key = os.getenv('GDtfDCFYjD')
 setup_db(app)
-app.secret_key = os.getenv('SECRET')
 
 '''
  @cors Set up CORS. Allow '*' for origins.
 '''
-# CORS(app, resources={r'/api/*': {'origins': '*'}})
+
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 '''
    after_request decorator to set Access-Control-Allow
 '''
-
 
 @app.after_request
 def after_request(response):
@@ -32,13 +33,10 @@ def after_request(response):
     return response
 
 
-# for testing
 @app.route('/')
-# @cross_origin()
+@cross_origin()
 def index():
     return render_template('index.html')
-
-
 
 
 # db_drop_and_create_all()
@@ -57,14 +55,13 @@ def index():
 
 @app.route('/movies', methods=['GET'])
 @cross_origin()
-# @requires_auth('get:movies')
 def get_all_movies():
     # return 'im good'
     movies = Movies.query.all()
     movie = []
     movieOjt = {}
     movieArray = []
-    
+
     for m in movies:
         movie = (m.short())
         movieOjt = {
@@ -74,9 +71,7 @@ def get_all_movies():
             'movie_details': m.movie_details
             }
         movieArray.append(movieOjt)
-        
-            
-    print('ob ', movieArray)
+
     return render_template('movies.html', data=movieArray)
     # return jsonify({
     #     'success': True,
@@ -84,23 +79,6 @@ def get_all_movies():
     # }), 200
 
 
-@app.route('/actors', methods=['GET'])
-@cross_origin()
-# @requires_auth('get:movies')
-def get_all_actors():
-    # return 'im good'
-    actors = Actors.query.all()
-    actor = []
-    for a in actors:
-        actor.append(a.short())
-    
-    return render_template('actors.html', data=actor)
-    # return jsonify({
-    #     'success': True,
-    #     'movies': movie
-    # }), 200
-
-    
 '''
 @ GET /movies-detail endpoint
     - it require the 'get:movies-detail' permission
@@ -144,16 +122,15 @@ def getmovieDetail(payload, id):
 @requires_auth('post:movie')
 def createMovie(payload):
     data_json = request.get_json()
-    # movie = []
     # {id: -1, title: '', release_date: 0, movie_details: ''}
-    if not ("title" in data_json):
+    if not ("title" in data_json[0]):
         abort(401)
 
     else:
         try:
-            movie_title = data_json.get('title', None)
-            new_movie_details = data_json.get('movie_details')
-            movie_release_date = data_json.get('release_date')
+            movie_title = data_json[0].get('title', None)
+            new_movie_details = data_json[0].get('Details')
+            movie_release_date = data_json[0].get('Release')
 
             new_movie = Movies(
                 title=movie_title,
@@ -173,17 +150,17 @@ def createMovie(payload):
             }), 200
 
 
-# '''
-# @ PATCH /movies/<id> endpoint <id> is the existing model id
-#     - it respond with a 404 error if <id> is not found
-#     - it update the corresponding row for <id>
-#     - it require the 'patch:movies' permission
-#     - it contain the movie.long() data representation
-#     - returns status code 200 and json
-#     {"success": True, "movies": movie
-#      where movie an array containing only the updated movie
-#      or appropriate status code indicating reason for failure
-# '''
+'''
+@ PATCH /movies/<id> endpoint <id> is the existing model id
+    - it respond with a 404 error if <id> is not found
+    - it update the corresponding row for <id>
+    - it require the 'patch:movies' permission
+    - it contain the movie.long() data representation
+    - returns status code 200 and json
+    {"success": True, "movies": movie
+     where movie an array containing only the updated movie
+     or appropriate status code indicating reason for failure
+'''
 
 
 @app.route('/movies/<int:id>', methods=['PATCH'])
@@ -191,9 +168,9 @@ def createMovie(payload):
 @requires_auth('update:movies')
 def updateMovies(payload, id):
     data_json = request.get_json()
-    movie_title = data_json.get('title')
-    movie_release_date = data_json.get('release_date')
-    movie_details = data_json.get('movie_details')
+    movie_title = data_json[0].get('title')
+    movie_release_date = data_json[0].get('Release')
+    movie_details = data_json[0].get('Details')
 
     try:
         movie = Movies.query.filter(Movies.id == id).one_or_none()
@@ -217,17 +194,17 @@ def updateMovies(payload, id):
         }), 200
 
 
-# '''
-# @endpoint DELETE /movies/<id>
-#     - <id> is the existing model id
-#     - it respond with a 404 error if <id> is not found
-#     - it delete the corresponding row for <id>
-#     - it require the 'delete:movies' permission
-#     - returns status code 200 and json
-#       {"success": True, "delete": id}
-#       where id is the id of the deleted record
-#       or appropriate status code indicating reason for failure
-# '''
+'''
+@endpoint DELETE /movies/<id>
+    - <id> is the existing model id
+    - it respond with a 404 error if <id> is not found
+    - it delete the corresponding row for <id>
+    - it require the 'delete:movies' permission
+    - returns status code 200 and json
+      {"success": True, "delete": id}
+      where id is the id of the deleted record
+      or appropriate status code indicating reason for failure
+'''
 
 
 @app.route('/movies/<int:id>', methods=['DELETE'])
@@ -251,11 +228,188 @@ def deleteMovies(payload, id):
         }), 200
 
 
+'''
+@ GET /actors endpoint
+    - it is a public endpoint
+    - it contain only the movie.short() data representation
+    - returns status code 200 and json
+      {"success": True, "actors": actors}
+      where actors is the list of actors
+      or appropriate status code indicating reason for failure
+'''
+
+
+@app.route('/actors', methods=['GET'])
+@cross_origin()
+def get_all_actors():
+    # return 'im good'
+    actors = Actors.query.all()
+    actor = []
+    for a in actors:
+        actor.append(a.short())
+
+    return render_template('actors.html', data=actor)
+    # return jsonify({
+    #     'success': True,
+    #     'actors': actor
+    # }), 200
+
+
+'''
+@ GET /actors-detail endpoint
+    - it require the 'get:actors-detail' permission
+    - it contain the movie.long() data representation
+    - returns status code 200 and json
+      {"success": True, "actors": actors}
+      where actors is the list of actors
+      or appropriate status code indicating reason for failure
+'''
+
+
+@app.route('/actor-details/<int:id>', methods=['GET'])
+@cross_origin()
+@requires_auth('get:actors')
+def getActorDetail(payload, id):
+    actors = Actors.query.get(id)
+    actor = []
+
+    actor.append(actors.long())
+
+    return jsonify({
+        'success': True,
+        'movies': actor
+    }), 200
+
+
+'''
+@ POST /actors endpoint
+    - it create a new row in the actors table
+    - it require the 'post:actors' permission
+    - it contain the actors.long() data representation
+    - returns status code 200 and json
+      {"success": True, "actors": movie}
+      where movie an array containing only the newly created movie
+      or appropriate status code indicating reason for failure
+'''
+
+
+@app.route('/actors', methods=['POST'])
+@cross_origin()
+@requires_auth('post:actor')
+def createActor(payload):
+    data_json = request.get_json()
+    # {id: -1, title: '', release_date: 0, movie_details: ''}
+    if not ("actorName" in data_json[0]):
+        abort(401)
+
+    else:
+        try:
+            actor_name = data_json[0].get('actorName')
+            actor_age = data_json[0].get('age')
+            actor_gender = data_json[0].get('gender')
+
+            new_actor = Actors(
+                actorName=actor_name,
+                age=actor_age,
+                gender=actor_gender)
+
+            Actors.insert(new_actor)
+            actor = Actors.query.filter_by(id=new_actor.id).first()
+
+        except BaseException:
+            abort(400)
+
+        return jsonify(
+            {
+                'success': True,
+                'actors': actor.long()
+            }), 200
+
+
+'''
+@ PATCH /actors/<id> endpoint <id> is the existing model id
+    - it respond with a 404 error if <id> is not found
+    - it update the corresponding row for <id>
+    - it require the 'patch:actors' permission
+    - it contain the movie.long() data representation
+    - returns status code 200 and json
+    {"success": True, "actors": movie
+     where movie an array containing only the updated movie
+     or appropriate status code indicating reason for failure
+'''
+
+
+@app.route('/actors/<int:id>', methods=['PATCH'])
+@cross_origin()
+@requires_auth('update:actors')
+def updateActors(payload, id):
+
+    data_json = request.get_json()
+    actor_name = data_json[0].get('actorName', None)
+    actor_age = data_json[0].get('age')
+    actor_gender = data_json[0].get('gender')
+
+    try:
+        actor = Actors.query.filter(Actors.id == id).one_or_none()
+        if not actor:
+            abort(404)
+
+        if actor_name is not None:
+            actor.name = actor_name
+            actor.age = actor_age
+            actor.gender = actor_gender
+
+        actor.update()
+
+    except BaseException:
+        abort(400)
+
+    return jsonify(
+        {
+            'success': True,
+            'movies': [actor.long()]
+        }), 200
+
+
+'''
+@endpoint DELETE /actors/<id>
+    - <id> is the existing model id
+    - it respond with a 404 error if <id> is not found
+    - it delete the corresponding row for <id>
+    - it require the 'delete:actors' permission
+    - returns status code 200 and json
+      {"success": True, "delete": id}
+      where id is the id of the deleted record
+      or appropriate status code indicating reason for failure
+'''
+
+
+@app.route('/actors/<int:id>', methods=['DELETE'])
+@cross_origin()
+@requires_auth('delete:movie')
+def deleteActors(payload, id):
+    actor = Actors.query.filter(Actors.id == id).one_or_none()
+
+    if not actor:
+        abort(404)
+
+    try:
+        actor.delete()
+    except BaseException:
+        abort(400)
+
+    return jsonify(
+        {
+            'success': True,
+            'delete': id
+        }), 200
+
+
 # # Error Handling
-# '''
-#     Error handlers for all expected errors
-#     including 400, 401, 404, 405, 422 and 500.
-# '''
+'''
+    Error handlers for all expected errors
+    including 400, 401, 404, 405, 422 and 500.
+'''
 
 
 @app.errorhandler(AuthError)
@@ -308,11 +462,6 @@ def method_not_allowed(error):
             'error': 405,
             'message': 'Method Not Allowed'
         }), 405
-
-
-# '''
-# Example error handling for unprocessable entity
-# '''
 
 
 @app.errorhandler(422)
