@@ -41,8 +41,6 @@ def index():
     return render_template('index.html')
 
 
-# db_drop_and_create_all()
-
 # ROUTES
 '''
 @ GET /movies endpoint
@@ -58,7 +56,6 @@ def index():
 @app.route('/movies', methods=['GET'])
 @cross_origin()
 def get_all_movies():
-    # return 'im good'
     movies = Movies.query.all()
 
     movie = []
@@ -75,11 +72,11 @@ def get_all_movies():
             }
         movieArray.append(movieOjt)
 
-    # return render_template('movies.html', data=movieArray)
-    return jsonify({
-        'success': True,
-        'movies': movieOjt
-    }), 200
+    return render_template('movies.html', data=movieArray)
+    # return jsonify({
+    #     'success': True,
+    #     'movies': movieOjt
+    # }), 200
 
 
 '''
@@ -111,7 +108,6 @@ def getmovieDetail(payload, id):
         }), 200
     except Exception:
         abort(422)
-    # movie.append(movies
 
 
 '''
@@ -188,20 +184,20 @@ def updateMovies(payload, id):
     movie_release_date = data_json[0].get('Release')
     movie_details = data_json[0].get('Details')
 
-    # try:
-    movie = Movies.query.filter(Movies.id == id).one_or_none()
-    if not movie:
-        abort(404)
+    try:
+        movie = Movies.query.filter(Movies.id == id).one_or_none()
+        if not movie:
+            abort(404)
 
-    if movie_title is not None:
-        movie.title = movie_title
-        movie.release_date = movie_release_date
-        movie.movie_details = movie_details
+        if movie_title is not None:
+            movie.title = movie_title
+            movie.release_date = movie_release_date
+            movie.movie_details = movie_details
 
-    movie.update()
+        movie.update()
 
-    # except BaseException:
-    #     abort(400)
+    except BaseException:
+        abort(400)
 
     return jsonify(
         {
@@ -260,7 +256,6 @@ def deleteMovies(payload, id):
 @app.route('/actors', methods=['GET'])
 @cross_origin()
 def get_all_actors():
-    # return 'im good'
     actors = Actors.query.all()
     actor = []
     for a in actors:
@@ -430,7 +425,7 @@ def deleteActors(payload, id):
         }), 200
 
 
-# # Error Handling
+# Error Handling
 '''
     Error handlers for all expected errors
     including 400, 401, 404, 405, 422 and 500.
