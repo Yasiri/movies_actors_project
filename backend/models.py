@@ -5,14 +5,14 @@ import json
 import psycopg2
 
 # # for heroku deployment
-# database_path = os.environ['DATABASE_URL']
-# conn = psycopg2.connect(database_path, sslmode='require')
+database_path = os.environ['DATABASE_URL']
+conn = psycopg2.connect(database_path, sslmode='require')
 
 # for testing locally
-database_name = "capstoon"
-# database_name = "capstone_test"
-database_path = "postgresql://{}:{}@{}/{}".format(
-    'yaser', 'yaser', 'localhost:5432', database_name)
+# database_name = "capstoon"
+# # database_name = "capstone_test"
+# database_path = "postgresql://{}:{}@{}/{}".format(
+#     'yaser', 'yaser', 'localhost:5432', database_name)
 
 
 db = SQLAlchemy()
