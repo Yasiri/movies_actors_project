@@ -6,6 +6,7 @@ import psycopg2
 
 # # for heroku deployment
 database_path = os.environ['DATABASE_URL']
+print('db.. ', database_path)
 conn = psycopg2.connect(database_path, sslmode='require')
 
 # for testing locally
