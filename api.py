@@ -6,11 +6,12 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS, cross_origin
 
-from backend.models import setup_db, Movies, Actors
+from backend.models import setup_db, Movies, Actors, db
 from backend.auth import AuthError, requires_auth
 # heroku scale worker=1
 app = Flask(__name__)
 app.secret_key = os.getenv('GDtfDCFYjD')
+
 setup_db(app)
 
 '''
@@ -23,6 +24,7 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 '''
    after_request decorator to set Access-Control-Allow
 '''
+
 
 @app.after_request
 def after_request(response):
@@ -58,6 +60,7 @@ def index():
 def get_all_movies():
     # return 'im good'
     movies = Movies.query.all()
+
     movie = []
     movieOjt = {}
     movieArray = []
@@ -72,11 +75,11 @@ def get_all_movies():
             }
         movieArray.append(movieOjt)
 
-    return render_template('movies.html', data=movieArray)
-    # return jsonify({
-    #     'success': True,
-    #     'movies': movie
-    # }), 200
+    # return render_template('movies.html', data=movieArray)
+    return jsonify({
+        'success': True,
+        'movies': movieOjt
+    }), 200
 
 
 '''
@@ -95,14 +98,20 @@ def get_all_movies():
 @requires_auth('get:movies')
 def getmovieDetail(payload, id):
     movies = Movies.query.get(id)
-    movie = []
-
-    movie.append(movies.long())
-
-    return jsonify({
-        'success': True,
-        'movies': movie
-    }), 200
+    movie = {}
+    try:
+        movie = {
+            'title': movies.title,
+            'release_date': movies.release_date,
+            'movie_details': movies.movie_details
+        }
+        return jsonify({
+            'success': True,
+            'movies': movie
+        }), 200
+    except Exception:
+        abort(422)
+    # movie.append(movies
 
 
 '''
@@ -125,6 +134,13 @@ def createMovie(payload):
     # {id: -1, title: '', release_date: 0, movie_details: ''}
     if not ("title" in data_json[0]):
         abort(401)
+
+        exists = db.session.query(db.exists()
+                                  .where(Movies.title == data_json[0]
+                                         .get('title'))).scalar()
+
+        if(exists is True):
+            abort(400)
 
     else:
         try:
@@ -172,24 +188,25 @@ def updateMovies(payload, id):
     movie_release_date = data_json[0].get('Release')
     movie_details = data_json[0].get('Details')
 
-    try:
-        movie = Movies.query.filter(Movies.id == id).one_or_none()
-        if not movie:
-            abort(404)
+    # try:
+    movie = Movies.query.filter(Movies.id == id).one_or_none()
+    if not movie:
+        abort(404)
 
-        if movie_title is not None:
-            movie.title = movie_title
-            movie.release_date = movie_release_date
-            movie.movie_details = movie_details
+    if movie_title is not None:
+        movie.title = movie_title
+        movie.release_date = movie_release_date
+        movie.movie_details = movie_details
 
-        movie.update()
+    movie.update()
 
-    except BaseException:
-        abort(400)
+    # except BaseException:
+    #     abort(400)
 
     return jsonify(
         {
             'success': True,
+            'updated': id,
             'movies': [movie.long()]
         }), 200
 
@@ -224,7 +241,8 @@ def deleteMovies(payload, id):
     return jsonify(
         {
             'success': True,
-            'delete': id
+            'deleted': id,
+            "movie": movie
         }), 200
 
 
@@ -271,14 +289,20 @@ def get_all_actors():
 @requires_auth('get:actors')
 def getActorDetail(payload, id):
     actors = Actors.query.get(id)
-    actor = []
 
-    actor.append(actors.long())
-
-    return jsonify({
-        'success': True,
-        'movies': actor
-    }), 200
+    actor = {}
+    try:
+        actor = {
+            'actorName': actors.actorName,
+            'age': actors.age,
+            'gender': actors.gender
+        }
+        return jsonify({
+            'success': True,
+            'actors': actor
+        }), 200
+    except Exception:
+        abort(422)
 
 
 '''
@@ -343,7 +367,6 @@ def createActor(payload):
 @cross_origin()
 @requires_auth('update:actors')
 def updateActors(payload, id):
-
     data_json = request.get_json()
     actor_name = data_json[0].get('actorName', None)
     actor_age = data_json[0].get('age')
@@ -355,7 +378,7 @@ def updateActors(payload, id):
             abort(404)
 
         if actor_name is not None:
-            actor.name = actor_name
+            actor.actorName = actor_name
             actor.age = actor_age
             actor.gender = actor_gender
 
@@ -367,7 +390,8 @@ def updateActors(payload, id):
     return jsonify(
         {
             'success': True,
-            'movies': [actor.long()]
+            'updated': id,
+            'actors': [actor.long()]
         }), 200
 
 
@@ -386,7 +410,7 @@ def updateActors(payload, id):
 
 @app.route('/actors/<int:id>', methods=['DELETE'])
 @cross_origin()
-@requires_auth('delete:movie')
+@requires_auth('delete:actor')
 def deleteActors(payload, id):
     actor = Actors.query.filter(Actors.id == id).one_or_none()
 
@@ -401,7 +425,8 @@ def deleteActors(payload, id):
     return jsonify(
         {
             'success': True,
-            'delete': id
+            'deleted': id,
+            "movie": actor
         }), 200
 
 

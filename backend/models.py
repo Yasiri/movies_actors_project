@@ -10,6 +10,7 @@ import psycopg2
 
 # for testing locally
 database_name = "capstoon"
+# database_name = "capstone_test"
 database_path = "postgresql://{}:{}@{}/{}".format(
     'yaser', 'yaser', 'localhost:5432', database_name)
 
@@ -22,7 +23,7 @@ setup_db(app)
 '''
 
 
-def setup_db(app):
+def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config['SECRET_KEY'] = 'GDtfDCFYjD'
@@ -164,7 +165,7 @@ class Actors(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def update():
+    def update(self):
         db.session.commit()
 
     def format(self):
