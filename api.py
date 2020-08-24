@@ -54,7 +54,7 @@ def index():
 
 
 @app.route('/movies', methods=['GET'])
-@cross_origin()
+# @cross_origin()
 def get_all_movies():
     movies = Movies.query.all()
 
