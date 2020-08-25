@@ -56,23 +56,24 @@ def index():
 @app.route('/movies', methods=['GET'])
 # @cross_origin()
 def get_all_movies():
-    movies = Movies.query.all()
+    return 'movies'
+    # movies = Movies.query.all()
 
-    movie = []
-    movieOjt = {}
-    movieArray = []
+    # movie = []
+    # movieOjt = {}
+    # movieArray = []
 
-    for m in movies:
-        movie = (m.short())
-        movieOjt = {
-            'id': m.id,
-            'title': m.title,
-            'release_date': m.release_date,
-            'movie_details': m.movie_details
-            }
-        movieArray.append(movieOjt)
+    # for m in movies:
+    #     movie = (m.short())
+    #     movieOjt = {
+    #         'id': m.id,
+    #         'title': m.title,
+    #         'release_date': m.release_date,
+    #         'movie_details': m.movie_details
+    #         }
+    #     movieArray.append(movieOjt)
 
-    return render_template('movies.html', data=movieArray)
+    # return render_template('movies.html', data=movieArray)
     # return jsonify({
     #     'success': True,
     #     'movies': movieOjt
