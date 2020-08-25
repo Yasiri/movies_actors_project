@@ -264,14 +264,14 @@ def get_all_actors():
     for a in actors:
         actor = (a.short())
         actorOjt = {
-            'id': m.id,
-            'title': m.title,
-            'release_date': m.release_date,
-            'movie_details': m.movie_details
+            'id': a.id,
+            'actorName': a.actorName,
+            'age': a.age,
+            'gender': a.gender
             }
-        actor.append(actorOjt)
+        actorArray.append(actorOjt)
 
-    return render_template('actors.html', data=actor)
+    return render_template('actors.html', data=actorArray)
     # return jsonify({
     #     'success': True,
     #     'actors': actor
