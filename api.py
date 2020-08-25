@@ -56,24 +56,24 @@ def index():
 @app.route('/movies', methods=['GET'])
 # @cross_origin()
 def get_all_movies():
-    return 'movies'
-    # movies = Movies.query.all()
+    # return 'movies'
+    movies = Movies.query.all()
 
-    # movie = []
-    # movieOjt = {}
-    # movieArray = []
+    movie = []
+    movieOjt = {}
+    movieArray = []
 
-    # for m in movies:
-    #     movie = (m.short())
-    #     movieOjt = {
-    #         'id': m.id,
-    #         'title': m.title,
-    #         'release_date': m.release_date,
-    #         'movie_details': m.movie_details
-    #         }
-    #     movieArray.append(movieOjt)
+    for m in movies:
+        movie = (m.short())
+        movieOjt = {
+            'id': m.id,
+            'title': m.title,
+            'release_date': m.release_date,
+            'movie_details': m.movie_details
+            }
+        movieArray.append(movieOjt)
 
-    # return render_template('movies.html', data=movieArray)
+    return render_template('movies.html', data=movieArray)
     # return jsonify({
     #     'success': True,
     #     'movies': movieOjt
@@ -259,8 +259,17 @@ def deleteMovies(payload, id):
 def get_all_actors():
     actors = Actors.query.all()
     actor = []
+    actorOjt = {}
+    actorArray = []
     for a in actors:
-        actor.append(a.short())
+        actor = (a.short())
+        actorOjt = {
+            'id': m.id,
+            'title': m.title,
+            'release_date': m.release_date,
+            'movie_details': m.movie_details
+            }
+        actor.append(actorOjt)
 
     return render_template('actors.html', data=actor)
     # return jsonify({
