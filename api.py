@@ -255,7 +255,7 @@ def deleteMovies(payload, id):
 
 
 @app.route('/actors', methods=['GET'])
-@cross_origin()
+# @cross_origin()
 def get_all_actors():
     actors = Actors.query.all()
     actor = []
