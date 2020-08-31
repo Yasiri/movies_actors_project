@@ -125,7 +125,6 @@
             const container = document.getElementById('actorCards');
             // iterate through actors Json object
             myVar.forEach((result, idx) => {
-                console.log('age ', result.age)
                 // Create card element
                 const card = document.createElement('div');
                 card.classList = 'card-body';
@@ -281,10 +280,28 @@
                         } 
                         catch (error) 
                         {
-                            iziToast.error({
-                                title: "Error",
-                                message: 'error',
-                            });
+                            message = '';
+                            if(error == undefined){
+                                html = ''
+                                iziToast.error({
+                                    title: "Error",
+                                    message: 'Artist ALready Assigned..',
+                                });
+                                const data = await sendAssignData("/movies/assign", "", "GET");
+                                // reset movies list in checkbox
+                                data.movies.forEach((item) => {
+                                     html += `<input type="checkbox" name="movie" value="${item.id}">    ${item.title} </input> <br>`;
+                                     document.querySelector("#checkedItems").innerHTML = `<h6 style="color:red"> Already Assigned </h6>` + html;
+                                    });
+                                    // reset artist assign data
+                                    postdata = []
+                            }
+                            else {
+                                iziToast.error({
+                                    title: "Error",
+                                    message: error,
+                                });
+                            }
                         }
                     });
                 });

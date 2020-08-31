@@ -102,9 +102,6 @@ def get_all_movies():
     # create movies object
     for m in movies:
         movie = (m.short())
-        print('year ', m.release_date)
-        # movieDate = datetime.datetime(m.release_date.year, 1, 1)
-        # print('year 2 ', movieDate.strftime("%Y"))
         movieOjt = {
             'id': m.id,
             'title': m.title,
@@ -169,7 +166,6 @@ def get_all_movies_assign():
 def assignArtToMovie(payload):
     # get data from request
     data_json = request.get_json()
-
     # new_movie_id holds the movie id from request
     new_movie_id = data_json[0].get('movie_id')
     # new_actor_id holds the actor id from request
@@ -186,21 +182,27 @@ def assignArtToMovie(payload):
 
         # check if actor is already assigned to a movie
         exists = db.session.query(db.exists().where(
-            M_A_association.actor_id_a ==
-            data_json[0].get('actor_id'))).scalar()
+            M_A_association.actor_id_a == new_actor_id).where(M_A_association.movie_id_a == new_movie_id)).scalar()
 
+        print('exists ', exists)
         if exists is True:
             # used to disallow adding actor twice to a movie
             # this needs more work to be effecient
             new_movie_id = ''
             new_actor_id = ''
-        else:
-            # create insert values
-            new_movie = M_A_association(movie_id=int(new_movie_id),
-                                        actor_id=int(new_actor_id))
+            return jsonify(
+                {
+                    'success': False,
+                    'movies': 'Artist ALready Assigned'
+                }), 400
+            abort(404)
+        # else:
+        # create insert values
+        new_movie = M_A_association(movie_id=int(new_movie_id),
+                                    actor_id=int(new_actor_id))
 
-            # insert into M_A_association table
-            actor = M_A_association.insert(new_movie)
+        # insert into M_A_association table
+        actor = M_A_association.insert(new_movie)
 
     except BaseException:
         abort(400)
@@ -283,7 +285,7 @@ def createMovie(payload):
 
         datetime_obj = datetime.datetime.strptime(
             movie_release_date, '%Y-%m')
-        print('date ob ', datetime_obj.date())
+
         new_movie = Movies(
             title=movie_title,
             release_date=datetime_obj.date(),

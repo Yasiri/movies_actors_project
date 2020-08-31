@@ -118,7 +118,7 @@
                 // loop through listOfActors to determine which movie 
                 // an actor belongs to then appened to movie object {result}
                 for (i = 0; i < listOfActors.length; i++) {
-                    if (result.id == listOfActors[i].movieId){ 
+                    if(result.id == listOfActors[i].movieId){
                         actors.push(listOfActors[i].actor)
                         result['actorName'] = actors
                     }
@@ -133,6 +133,9 @@
                 const card = document.createElement('div');
                 card.classList = 'card-body';
                 // Construct card content
+                if(result.actorName == undefined){
+                    result.actorName = 'No Artist Assigned'
+                }
                 const content = `
                 <div class="col-xl-12 col-lg-4">
                     <div class="mycard" style="margin: 10px;">
