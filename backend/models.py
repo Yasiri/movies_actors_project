@@ -8,14 +8,14 @@ import psycopg2
 import datetime
 
 # # for heroku deployment
-database_path = os.environ['DATABASE_URL']
-conn = psycopg2.connect(database_path, sslmode='require')
+# database_path = os.environ['DATABASE_URL']
+# conn = psycopg2.connect(database_path, sslmode='require')
 
 # print('path ', database_path)
-# database_name = "capstoon"
-# # database_name = "capstone_test"
-# database_path = "postgresql://{}:{}@{}/{}".format(
-#     'yaser', 'yaser', 'localhost:5432', database_name)
+database_name = "capstoon"
+# database_name = "capstone_test"
+database_path = "postgresql://{}:{}@{}/{}".format(
+    'yaser', 'yaser', 'localhost:5432', database_name)
 
 
 db = SQLAlchemy()
@@ -52,6 +52,7 @@ class Movies(db.Model):
     title = db.Column(db.String(120), unique=True, nullable=False)
     release_date = db.Column(db.Date, nullable=False)
     movie_details = db.Column(db.String(200))
+    test = db.Column(db.Integer)
     actors = db.relationship("Actors", secondary="movies_actors")
 
     '''
