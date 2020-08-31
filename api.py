@@ -276,7 +276,7 @@ def createMovie(payload):
         movie_title = data_json[0].get('title', None)
         new_movie_details = data_json[0].get('movie_details')
         movie_release_date = data_json[0].get('release_date')
-
+        print('insert data ', movie_release_date)
         new_movie = Movies(
             title=movie_title,
             release_date=movie_release_date,
