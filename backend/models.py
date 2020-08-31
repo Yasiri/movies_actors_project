@@ -77,7 +77,7 @@ class Movies(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'release_date': movieDate.strftime("%Y"),
+            'release_date': self.release_date.year,  # movieDate.strftime("%Y")
             'movie_details': self.movie_details
         }
 
