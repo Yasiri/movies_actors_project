@@ -39,9 +39,9 @@
                         <span class="close"></span>
                         <p>Add New Movie</p>
                         <form id="formElem" onsubmit="event.preventDefault(); postMovie()">
-                            <label for="title">Movie Title: </label> <br />
+                            <label for="title">Movie Title: </label>
                             <input type="text" id="title" name="title"><br><br>
-                            <label for="Release">Release Date:</label> <br />
+                            <label for="Release">Release Date:</label>  
                             <input type="month" min="1950-03" value="2020-05" id="Release" name="Release"><br><br>
                             Movie Description: <br />
                             <textarea rows="5" cols="50" name="Details"
@@ -64,10 +64,10 @@
                         <span class="close"></span>
                         <p>Edit Movie Details</p>
                         <form id="formElemEdit" onsubmit="event.preventDefault(); saveing(savingid)">
-                            <label for="title">Movie Title: </label> <br />
+                            <label for="title">Movie Title: </label>
                             <input type="text" id="title" name="title"><br><br>
-                            <label for="Release">Release Date:</label> <br />
-                            <input class="Release" type="date" id="Release" name="Release"><br><br>
+                            <label for="Release">Release Date:</label> 
+                            <input class="Release" type="month" id="Release" name="Release"><br><br>
                             Movie Description: <br />
                             <textarea rows="5" cols="50" name="Details"
                                 placeholder="Enter description here..."></textarea>
@@ -118,7 +118,6 @@
                 // loop through listOfActors to determine which movie 
                 // an actor belongs to then appened to movie object {result}
                 for (i = 0; i < listOfActors.length; i++) {
-                    console.log('test... ', listOfActors[i])
                     if (result.id == listOfActors[i].movieId){ 
                         actors.push(listOfActors[i].actor)
                         result['actorName'] = actors
@@ -204,7 +203,7 @@
                 savingid = id;
                 var movieDate = new Date(release_date)
                 formElemEdit.elements["title"].value = title;
-                formElemEdit.elements["Release"].value = movieDate.toISOString().slice(0, 10);
+                formElemEdit.elements["Release"].value = movieDate.toISOString().slice(0, 7);
                 formElemEdit.elements["Details"].value = movie_details;
 
                 if (event.target.id !== 'edit') {

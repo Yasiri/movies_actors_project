@@ -3303,7 +3303,7 @@ input[type=button].btn-block {
   display: inline-flex;
   vertical-align: middle;
   margin-left: 71px !important;
-  padding-top: 30px
+  padding-top: 0px
   /* add margin  */
 }
 .btn-group > .btn,
