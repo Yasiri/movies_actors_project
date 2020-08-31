@@ -23,23 +23,23 @@
             <div class="col-xl-4 col-lg-5">
                 <div class="featured-text text-center text-lg-left">
                     <h4 style="margin-left: 80px;">View Actors</h4>
-                    <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it
-                        for any project - even commercial projects! Download it, customize it, and publish your website!
+                    <p class="text-black-50 mb-0">This page allows you to view, delete and edit act(or/ress). Also you 
+                        can assign act(or/ress) to movies.
                     </p>
                 </div>
                 <div id="myModal" class="modal">
                     <!-- Modal Post New Actors content -->
                     <div id="addModal" class="modal-content">
                         <span class="close"></span>
-                        <p>Some text in the Modal..</p>
+                        <p>Add New Actor</p>
                         <form id="formElem" onsubmit="event.preventDefault(); postActor()">
-                            <label for="name">Name: </label>
+                            <label for="name">Name: </label> <br/>
                             <input type="text" id="name" name="name"><br><br>
-                            <label for="age">Age:</label>
+                            <label for="age">Age:</label> <br/>
                             <input type="text" id="age" name="age"><br><br>
                             Gender : <br />
-                            <textarea rows="5" cols="50" name="gender"
-                                placeholder="Enter description here..."></textarea>
+                            <input type="text" name="gender"
+                                placeholder="M or F"></input>
                             <div class="btn-group">
                                 <button class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;">
                                     Save
@@ -56,15 +56,15 @@
                     <!-- Modal Update Actors content -->
                     <div id="editModal" class="modaledit-content">
                         <span class="close"></span>
-                        <p>Edit text in the Modal..</p>
+                        <p>Edit Act(or/ress) Information</p>
                         <form id="formElemEdit" onsubmit="event.preventDefault(); saveing(savingid)">
-                            <label for="name">Name: </label>
+                            <label for="name">Name: </label> <br/>
                             <input type="text" id="name" name="name"><br><br>
-                            <label for="age">Age:</label>
+                            <label for="age">Age:</label> <br/>
                             <input type="text" id="age" name="age"><br><br>
                             Gender : <br />
-                            <textarea rows="5" cols="50" name="gender"
-                                placeholder="Enter description here..."></textarea>
+                            <input type="text" name="gender"
+                                placeholder="Enter description here..."></input>
                             <div class="btn-group">
                                 <button id="save" class="btn btn-primary text-center"
                                     style="margin: 10px; margin-left: 100px;">
@@ -133,18 +133,19 @@
                 const content = `
                 <div class="col-xl-4 col-lg-3">
                     <div class="mycard" style="margin: 10px;">
-                        <a  id="delete" class="deleteButton" href="#addModal"style="margin-left: 195px;" 
+                        <a  id="delete" class="deleteButton" href="#addModal" 
                             onclick="deleteActor(${result.id})">
                             <i class="fa fa-trash"></i>
                         </a>
-                        <img style="display: block; margin-left: auto; margin-right: auto; width: 50%; height=100%" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar" style="width:50%">
+
                         <div class="mycontainer">
                             <h4>
-                                <b>name: ${result.actorName}</b>
+                                <b>${result.actorName}</b>
                             </h4>
+                            <img style="display: block; margin-left: auto; margin-right: auto; width: 20%; height=100%" src="{{ url_for('static', filename='assets/img/movie_main_logo_actor.jpg') }}" alt="Avatar" style="width:50%">
                                 <p>age : ${result.age}</p>
-                                <p>${result.gender}</p>
-                            <div  class="col-xl-4 col-lg-5">
+                                <p>Gender: ${result.gender}</p>
+                            <div  class="col-xl-6 col-lg-5">
                                 <div id="editDel" class="btn-group">
                                     <a id="edit" class="editButton" href="#editModal" rel="modal:open" 
                                         onclick="geteditActordata('${result.id}','${result.actorName}', '${result.age}', '${result.gender}')">

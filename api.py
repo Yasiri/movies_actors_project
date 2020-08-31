@@ -282,7 +282,7 @@ def createMovie(payload):
         movie_release_date = data_json[0].get('release_date')
 
         datetime_obj = datetime.datetime.strptime(
-            movie_release_date, '%Y-%m-%d')
+            movie_release_date, '%Y-%m')
         print('date ob ', datetime_obj.date())
         new_movie = Movies(
             title=movie_title,

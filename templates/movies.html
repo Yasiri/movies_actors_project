@@ -29,21 +29,21 @@
             <div class="col-xl-4 col-lg-5">
                 <div class="featured-text text-center text-lg-left">
                     <h4 style="margin-left: 80px;">View Movies</h4>
-                    <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it
-                        for any project - even commercial projects! Download it, customize it, and publish your website!
+                    <p class="text-black-50 mb-0"> This page allows you to add, edit and delete movies. Also allows you to 
+                        view movies details by clicking on (> Movie Details)
                     </p>
                 </div>
                 <div id="myModal" class="modal">
                     <!-- Modal create movie content -->
                     <div id="addModal" class="modal-content">
                         <span class="close"></span>
-                        <p>Some text in the Modal..</p>
+                        <p>Add New Movie</p>
                         <form id="formElem" onsubmit="event.preventDefault(); postMovie()">
-                            <label for="title">Movie Title: </label>
+                            <label for="title">Movie Title: </label> <br />
                             <input type="text" id="title" name="title"><br><br>
-                            <label for="Release">Release Date:</label>
-                            <input type="date" id="Release" name="Release"><br><br>
-                            Movie Details : <br />
+                            <label for="Release">Release Date:</label> <br />
+                            <input type="month" min="1950-03" value="2020-05" id="Release" name="Release"><br><br>
+                            Movie Description: <br />
                             <textarea rows="5" cols="50" name="Details"
                                 placeholder="Enter description here..."></textarea>
                             <div class="btn-group">
@@ -62,13 +62,13 @@
                     <!-- Modal Ypdate Movie content -->
                     <div id="editModal" class="modaledit-content">
                         <span class="close"></span>
-                        <p>Edit text in the Modal..</p>
+                        <p>Edit Movie Details</p>
                         <form id="formElemEdit" onsubmit="event.preventDefault(); saveing(savingid)">
-                            <label for="title">Movie Title: </label>
+                            <label for="title">Movie Title: </label> <br />
                             <input type="text" id="title" name="title"><br><br>
-                            <label for="Release">Release Date:</label>
+                            <label for="Release">Release Date:</label> <br />
                             <input class="Release" type="date" id="Release" name="Release"><br><br>
-                            Movie Details : <br />
+                            Movie Description: <br />
                             <textarea rows="5" cols="50" name="Details"
                                 placeholder="Enter description here..."></textarea>
                             <div class="btn-group">
@@ -139,12 +139,13 @@
                     <div class="mycard" style="margin: 10px;">
                         <div class="showrow">
                     <div class="showcolumn">
-                        <img style="display: block; margin-left: auto; margin-right: auto; width:101%; height:90px" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar">
                         <div class="showcard">
                             <div class="mycontainer">
                             <h4>
-                                🎥<h3> ${result.title}</h3>
+                               <h3> ${result.title}</h3>
                             </h4>
+                            <img style="display: block; margin-left: auto; margin-right: auto; width:40%; height:70px" src="{{ url_for('static', filename='assets/img/movie_main_logo_main.jpg') }}" alt="Avatar">
+                            <br>
                                 <p><i class='far fa-calendar-alt' style='font-size:24px'></i> ${movieDate}</p>
                                 <p><i class="fa fa-star" style="font-size:18px;color:#FFD700"></i> <h6 id="stars"></h6>
                                     ${result.actorName}
