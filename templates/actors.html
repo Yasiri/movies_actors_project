@@ -1,31 +1,34 @@
 {% extends 'base.html' %}
 
 {% block actors %}
-<!-- Projects-->
+<!-- Actors-->
 <script>
-    savingid = '';
-    myVar = myFunc({{ data| tojson}})
+    // used to create dynamic html tag
+    var html = "";
+    // store actors id 
+    var savingid = '';
+    // load permissions length from localstorage
     permissions = localStorage.getItem("permsLength");
+    // this function is used to get actors data and convert it to json object 
+    myVar = myFunc({{ data| tojson}});
     function myFunc(vars) {
         return vars;
     }
-    console.log('var ', myVar)
 </script>
-<section class="projects-section bg-light" id="ViewMovies">
+<section class="projects-section bg-light" id="ViewActors">
     <div class="container">
-        <!-- Featured Project Row-->
         <div style="margin-left: 80px;" class="row justify-content-center no-gutters mb-4 mb-lg-5">
             <div class="col-xl-4 col-lg-3">
             </div>
             <div class="col-xl-4 col-lg-5">
                 <div class="featured-text text-center text-lg-left">
-                    <h4 style="margin-left: 80px;">View Movies</h4>
+                    <h4 style="margin-left: 80px;">View Actors</h4>
                     <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it
                         for any project - even commercial projects! Download it, customize it, and publish your website!
                     </p>
                 </div>
                 <div id="myModal" class="modal">
-                    <!-- Modal content -->
+                    <!-- Modal Post New Actors content -->
                     <div id="addModal" class="modal-content">
                         <span class="close"></span>
                         <p>Some text in the Modal..</p>
@@ -46,12 +49,11 @@
                                     Cancel
                                 </button>
                             </div>
-                            <!-- <input type="submit" formtarget="_blank" value="Submit to a new window/tab"> -->
                         </form>
                     </div>
                 </div>
                 <div id="myeditModal" class="modaledit">
-                    <!-- Modal content -->
+                    <!-- Modal Update Actors content -->
                     <div id="editModal" class="modaledit-content">
                         <span class="close"></span>
                         <p>Edit text in the Modal..</p>
@@ -75,10 +77,43 @@
                             </div>
                         </form>
                     </div>
+                </div> 
+                <div id="assignModal" class="modal" style="margin-bottom: 190px; width: auto; height: auto;">
+                    <!-- Modal Assign Actors to movie content -->
+                    <div id="assignModal" class="modaledit-content" style="width: auto !important; height: auto !important;">
+                        <span class="close" ></span>
+                        <p>Some text in the Modal..XX</p>
+                        <form id="formElemmovieChecked" onsubmit="event.preventDefault() ">
+                            <div class="container-fluid">
+                                <div class="row2">
+                                    <div class="col-xs-5">
+                                        <div style="max-height: 200px;" id="ListBox"></div>
+                                    </div>
+                                    <div class="col-xs-7">
+                                        <p>
+                                            <b> Checked Items:</b>
+                                        </p>
+                                        <ul id="checkedItems">
+                                            <input type="checkbox" id="movieChecked" name="movieChecked" value="Bike">
+
+                                        </ul>
+                                        <button id="submitbox" class="btn btn-primary text-center" style="margin: 10px;
+                                        margin-left: 33px;
+                                        height: 2px;
+                                        width: 96px;
+                                        padding-top: 2px;
+                                        padding-right: 90px">
+                                            Assign
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <!-- Link to open the modal -->
-                <a id="save" class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;"
-                    href="#addModal" rel="modal:open">
+                <!-- Link to open the modals -->
+                <a id="save" class="btn btn-primary text-center" 
+                    style="margin: 10px; margin-left: 100px;" href="#addModal" rel="modal:open">
                     Add Act(or/ress)
                 </a>
             </div>
@@ -86,7 +121,9 @@
         <div id="actorCards" class="row justify-content-center no-gutters mb-5 mb-lg-0">
         </div>
         <script>
+            // define actors card container to be created dynamically
             const container = document.getElementById('actorCards');
+            // iterate through actors Json object
             myVar.forEach((result, idx) => {
                 console.log('age ', result.age)
                 // Create card element
@@ -96,7 +133,11 @@
                 const content = `
                 <div class="col-xl-4 col-lg-3">
                     <div class="mycard" style="margin: 10px;">
-                        <img style="display: block; margin-left: auto; margin-right: auto; width: 80%; height=50%" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar" style="width:50%">
+                        <a  id="delete" class="deleteButton" href="#addModal"style="margin-left: 195px;" 
+                            onclick="deleteActor(${result.id})">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                        <img style="display: block; margin-left: auto; margin-right: auto; width: 50%; height=100%" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar" style="width:50%">
                         <div class="mycontainer">
                             <h4>
                                 <b>name: ${result.actorName}</b>
@@ -105,12 +146,15 @@
                                 <p>${result.gender}</p>
                             <div  class="col-xl-4 col-lg-5">
                                 <div id="editDel" class="btn-group">
-                                    <a id="edit" class="editButton" href="#editModal" rel="modal:open" onclick="geteditActordata('${result.id}','${result.actorName}', '${result.age}', '${result.gender}')">
+                                    <a id="edit" class="editButton" href="#editModal" rel="modal:open" 
+                                        onclick="geteditActordata('${result.id}','${result.actorName}', '${result.age}', '${result.gender}')">
                                         Edit
                                     </a>
-                                    <a  id="delete" class="deleteButton" href="#addModal" style="margin-left: 70px" onclick="deleteActor(${result.id})">
-                                        Delete
+                                    <a  id="assign" class="assignButton" href="#assignModal" 
+                                        style="margin-left: 50px" rel="modal:open" onclick="assignActorToMovie('${result.id}')">
+                                        Assign 
                                     </a>
+                                    <i class="fa fa-film" style="font-size:26px; padding-top: 1.5px; margin-left: 8px"></i>
                                 </div>
                             </div>
                         </div>
@@ -119,6 +163,7 @@
                 `;
                 // Append newyly created card element to the container
                 container.innerHTML += content;
+                // Disable edit and delete buttons if user not authorized
                 if (permissions <= 2) {
                     var editButton = document.getElementById("actorCards").querySelectorAll("#edit");
                     var deleteButton = document.getElementById("actorCards").querySelectorAll("#delete");
@@ -139,26 +184,31 @@
                 } catch (err) {
                     console.log('error ', err)
                 }
-  
             }
         </script>
-        <script>
-            var myid = '';
+        <script> 
+            /*
+                geteditActordata Loads actors data for update operation
+                @ savingid actor id to update
+            */
             async function geteditActordata(id, name, age, gender) {
-                console.log('age 2', age)
-                myid = id
                 savingid = id;
                 formElemEdit.elements["name"].value = name;
                 formElemEdit.elements["age"].value = age;
                 formElemEdit.elements["gender"].value = gender;
-                if (event.target.id === 'edit') {
-                    console.log(event.target.href);
-                }
-                else {
-                    console.log('saveing...')
+
+                if (event.target.id !== 'edit') {
+                    console.log('Updating...')
                     savingid = id;
                 }
+
             };
+            /*
+                saveing construct update data and send request
+                to /actors/${id} to update actor's info
+                @ id actor id to update
+                @ postdata data to be sent to the endpoint
+            */
             async function saveing(id) {
                 name = formElemEdit.elements["name"].value;
                 age = formElemEdit.elements["age"].value;
@@ -168,13 +218,14 @@
                     age: age,
                     gender: gender,
                 };
+                
                 postdata = [];
                 postdata.push(dataObj);
-                const data = await sendData(`/actors/${id}`, postdata, "PATCH");
                 try {
-                    // const data = await sendData(`/movies/${id}`, postdata, "PATCH");
+                    const data = await sendData(`/actors/${id}`, postdata, "PATCH");
                     if (data.success) {
-                        location.href = "/actors";
+                        location.reload();
+                        location.href = "/actors#ViewActors";
                     } else {
                         throw data.message;
                     }
@@ -185,8 +236,59 @@
                     });
                 }
             }
-  
+            /*
+                assignActorToMovie construct update data and send request
+                to /actors/${id} to update actor's info
+                @ id actor id to update
+            */
+            async function assignActorToMovie(actorID) {
+                postdata = [];
+                dataObj = {};
+
+                // needed for preventing overloading and repeating checkbox content
+                if(html != ''){
+                    html = '';
+                }
+
+                const data = await sendAssignData("/movies/assign", "", "GET");
+                data.movies.forEach((item) => {
+                    html += `<input type="checkbox" name="movie" value="${item.id}">    ${item.title}</input> <br>`;
+                    document.querySelector("#checkedItems").innerHTML = html;
+                });
+                // on assign click get movie id and actor id 
+                // then send request to "/actors/assignartist" endpoint
+                // to link actors to movies
+                $(document).ready(function () {
+                    $("#submitbox").click(async function () {
+                        $.each($("input[name='movie']:checked"), function () {
+                            dataObj = {
+                                movie_id: $(this).val(),
+                                actor_id: actorID
+                            };
+                        });
+                        postdata.push(dataObj);
+
+                        try {
+                            const data = await sendData("/actors/assignartist", postdata, "POST");
+                            if (data.success) {
+                                location.reload();
+                                location.href = "/actors#ViewActors";
+                            } else {
+                                document.querySelector("#checkedItems").innerHTML = '';
+                                throw data.message;
+                            }
+                        } 
+                        catch (error) 
+                        {
+                            iziToast.error({
+                                title: "Error",
+                                message: 'error',
+                            });
+                        }
+                    });
+                });
+            }
         </script>
     </div>
-  </section>
+</section>
 {% endblock %}

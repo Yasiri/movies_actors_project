@@ -9,14 +9,20 @@ from backend.models import setup_db, Movies, Actors, db
 from backend.auth import AuthError, requires_auth
 from dotenv import load_dotenv
 
+# Parse a .env file and then load all variables found as environment variables.
 load_dotenv()
 
-ACCESS_TOKEN = os.getenv('Executive_Producer', None)
-assert ACCESS_TOKEN
+# load user token for testing
+ACCESS_TOKEN_Executive_Producer = os.getenv('Executive_Producer', None)
+ACCESS_TOKEN_Casting_Director = os.getenv('Casting_Director', None)
+ACCESS_TOKEN_Casting_Assistant = os.getenv('Casting_Assistant', None)
+assert ACCESS_TOKEN_Executive_Producer
 
+# To test other users change the access token
+# and use the one needed initially ACCESS_TOKEN_Executive_Producer is used
 headers = {
             'Authorization': 'Bearer {}'
-            .format(ACCESS_TOKEN)
+            .format(ACCESS_TOKEN_Executive_Producer)
         }
 
 database_name = "capstone_test"
@@ -57,7 +63,7 @@ class CastingTestCase(unittest.TestCase):
     """
     def test_get_movies(self):
         res = self.client().get('/movies')
-        if res.status_code != 200:
+        if (res.status_code != 200):
             print('API endpoint Not Found...')
             self.assertEqual(res.status_code, 404)
         else:
@@ -74,22 +80,31 @@ class CastingTestCase(unittest.TestCase):
         res = self.client().get('/movie-details/1', headers=headers)
         data = json.loads(res.data)
 
-        if res.status_code == 200:
+        if (res.status_code == 200):
             self.assertEqual(res.status_code, 200)
             self.assertEqual(data['success'], True)
             self.assertTrue(data['movies'])
-        else:
+        elif (res.status_code == 422):
             self.assertEqual(res.status_code, 422)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'unprocessable')
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_422_get_movie_by_id_fail(self):
         res = self.client().get('/movie-details/10000', headers=headers)
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 422)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'unprocessable')
+        if (res.status_code == 422):
+            self.assertEqual(res.status_code, 422)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'unprocessable')
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_create_new_movie(self):
         movieData = [{
@@ -100,10 +115,16 @@ class CastingTestCase(unittest.TestCase):
 
         res = self.client().post('/movies', json=movieData, headers=headers)
         data = json.loads(res.data)
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
-        # self.assertTrue(data['created'])
-        self.assertTrue((data['movies']))
+
+        if (res.status_code == 200):
+            self.assertEqual(res.status_code, 200)
+            self.assertEqual(data['success'], True)
+            # self.assertTrue(data['created'])
+            self.assertTrue((data['movies']))
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_update_movie(self):
         movieData = [{
@@ -115,45 +136,53 @@ class CastingTestCase(unittest.TestCase):
         res = self.client().patch('/movies/1', json=movieData, headers=headers)
         data = json.loads(res.data)
 
-        if res.status_code == 200:
+        if (res.status_code == 200):
             self.assertEqual(res.status_code, 200)
             self.assertEqual(data['success'], True)
             self.assertEqual(data['updated'], 1)
             self.assertTrue(data['updated'])
             self.assertTrue(len(data['movies']))
-        elif res.status_code == 400:
+        elif (res.status_code == 400):
             self.assertEqual(res.status_code, 400)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'Bad Request')
-        else:
+        elif (res.status_code == 404):
             self.assertEqual(res.status_code, 404)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'Resource Not Found')
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_delete_movie(self):
         res = self.client().delete('/movies/1', headers=headers)
         data = json.loads(res.data)
         movie = Movies.query.filter(Movies.id == 1).one_or_none()
 
-        if res.status_code == 200:
+        if (res.status_code == 200):
             self.assertEqual(res.status_code, 200)
             self.assertEqual(data['success'], True)
             self.assertEqual(data['deleted'], 1)
             self.assertTrue(data['deleted'])
             self.assertTrue(len(data['movie']))
             self.assertEqual(movie, None)
-        elif res.status_code == 400:
+        elif (res.status_code == 400):
             self.assertEqual(res.status_code, 400)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'Bad Request')
-        else:
+        elif (res.status_code == 404):
             self.assertEqual(res.status_code, 404)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'Resource Not Found')
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_get_actors_ess(self):
         res = self.client().get('/actors')
-        if res.status_code != 200:
+        if (res.status_code != 200):
             print('API endpoint Not Found...')
             self.assertEqual(res.status_code, 404)
         else:
@@ -176,30 +205,45 @@ class CastingTestCase(unittest.TestCase):
 
         res = self.client().post('/actors', json=movieData, headers=headers)
         data = json.loads(res.data)
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertTrue((data['actors']))
+
+        if(res.status_code == 200):
+            self.assertEqual(res.status_code, 200)
+            self.assertEqual(data['success'], True)
+            self.assertTrue((data['actors']))
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_422_get_actor_ess_by_id(self):
         res = self.client().get('/actor-details/1', headers=headers)
 
         data = json.loads(res.data)
-        if res.status_code == 200:
+        if (res.status_code == 200):
             self.assertEqual(res.status_code, 200)
             self.assertEqual(data['success'], True)
             self.assertTrue(data['actors'])
-        else:
+        elif (res.status_code == 422):
             self.assertEqual(res.status_code, 422)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'unprocessable')
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_422_get_actor_ess_by_id_fail(self):
         res = self.client().get('/actor-details/10000', headers=headers)
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 422)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'unprocessable')
+        if (res.status_code == 422):
+            self.assertEqual(res.status_code, 422)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'unprocessable')
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_update_actor(self):
         actorData = [{
@@ -213,41 +257,49 @@ class CastingTestCase(unittest.TestCase):
                                   headers=headers)
         data = json.loads(res.data)
 
-        if res.status_code == 200:
+        if (res.status_code == 200):
             self.assertEqual(res.status_code, 200)
             self.assertEqual(data['success'], True)
             self.assertEqual(data['updated'], 1)
             self.assertTrue(data['updated'])
             self.assertTrue(len(data['actors']))
-        elif res.status_code == 400:
+        elif (res.status_code == 400):
             self.assertEqual(res.status_code, 400)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'Bad Request')
-        else:
+        elif (res.status_code == 404):
             self.assertEqual(res.status_code, 404)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'Resource Not Found')
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
     def test_delete_actor(self):
         res = self.client().delete('/actors/1', headers=headers)
         data = json.loads(res.data)
         actor = Actors.query.filter(Actors.id == 1).one_or_none()
 
-        if res.status_code == 200:
+        if (res.status_code == 200):
             self.assertEqual(res.status_code, 200)
             self.assertEqual(data['success'], True)
             self.assertEqual(data['deleted'], 1)
             self.assertTrue(data['deleted'])
             self.assertTrue(len(data['actor']))
             self.assertEqual(actor, None)
-        elif res.status_code == 400:
+        elif (res.status_code == 400):
             self.assertEqual(res.status_code, 400)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'Bad Request')
-        else:
+        elif (res.status_code == 404):
             self.assertEqual(res.status_code, 404)
             self.assertEqual(data['success'], False)
             self.assertEqual(data['message'], 'Resource Not Found')
+        else:
+            self.assertEqual(res.status_code, 401)
+            self.assertEqual(data['success'], False)
+            self.assertEqual(data['message'], 'Unathorized, Token expired.')
 
 
 # Make the tests conveniently executable

@@ -1,21 +1,31 @@
 {% extends 'base.html' %}
 
 {% block movies %}
-<!-- Projects-->
+<!-- Movies -->
 <script>
-    savingid = '';
-    myVar = myFunc({{ data| tojson}})
+    // var month = new Array();
+    // month[0] = "Jan"; month[1] = "Feb"; month[2] = "Mar"; month[3] = "Apr"; month[4] = "May"; 
+    // month[5] = "Jun"; month[6] = "Jul"; month[7] = "Aug"; month[8] = "Sept"; month[9] = "Oct"; 
+    // month[10] = "Nov"; month[11] = "Dec";
+
+    // store movie id 
+    var savingid = '';
+    // this function is used to get actors data and convert it to json object 
+    assignedActors = assignedActorsFunc({{obj| tojson}})
+    function assignedActorsFunc(vars) {
+        return vars;
+    }
+    // this function is used to get movies data and convert it to json object 
+    MoviesList = MoviesListFunc({{ data| tojson}})
     permissions = localStorage.getItem("permsLength");
-    function myFunc(vars) {
+    function MoviesListFunc(vars) {
         return vars;
     }
 </script>
 <section class="projects-section bg-light" id="ViewMovies">
     <div class="container">
-        <!-- Featured Project Row-->
         <div style="margin-left: 80px;" class="row justify-content-center no-gutters mb-4 mb-lg-5">
-            <div class="col-xl-4 col-lg-3">
-            </div>
+            <div class="col-xl-4 col-lg-3"></div>
             <div class="col-xl-4 col-lg-5">
                 <div class="featured-text text-center text-lg-left">
                     <h4 style="margin-left: 80px;">View Movies</h4>
@@ -24,7 +34,7 @@
                     </p>
                 </div>
                 <div id="myModal" class="modal">
-                    <!-- Modal content -->
+                    <!-- Modal create movie content -->
                     <div id="addModal" class="modal-content">
                         <span class="close"></span>
                         <p>Some text in the Modal..</p>
@@ -32,7 +42,7 @@
                             <label for="title">Movie Title: </label>
                             <input type="text" id="title" name="title"><br><br>
                             <label for="Release">Release Date:</label>
-                            <input type="text" id="Release" name="Release"><br><br>
+                            <input type="date" id="Release" name="Release"><br><br>
                             Movie Details : <br />
                             <textarea rows="5" cols="50" name="Details"
                                 placeholder="Enter description here..."></textarea>
@@ -49,7 +59,7 @@
                     </div>
                 </div>
                 <div id="myeditModal" class="modaledit">
-                    <!-- Modal content -->
+                    <!-- Modal Ypdate Movie content -->
                     <div id="editModal" class="modaledit-content">
                         <span class="close"></span>
                         <p>Edit text in the Modal..</p>
@@ -57,7 +67,7 @@
                             <label for="title">Movie Title: </label>
                             <input type="text" id="title" name="title"><br><br>
                             <label for="Release">Release Date:</label>
-                            <input type="text" id="Release" name="Release"><br><br>
+                            <input class="Release" type="date" id="Release" name="Release"><br><br>
                             Movie Details : <br />
                             <textarea rows="5" cols="50" name="Details"
                                 placeholder="Enter description here..."></textarea>
@@ -74,7 +84,7 @@
                         </form>
                     </div>
                 </div>
-                <!-- Link to open the modal -->
+                <!-- Link to open the modals -->
                 <a id="save" class="btn btn-primary text-center" style="margin: 10px; margin-left: 100px;"
                     href="#addModal" rel="modal:open">
                     Add Movies
@@ -83,23 +93,66 @@
         </div>
         <div id="movieCards" class="row justify-content-center no-gutters mb-5 mb-lg-0">
         </div>
+
         <script>
-            const container = document.getElementById('movieCards');
-            myVar.forEach((result, idx) => {
+            // holds actors names if a movie has more than one
+            listOfActors = []
+            // temporary array for holding actors of the same movie 
+            actors = []
+
+            // iterate through the list of actors in a movie
+            // and appened data to listOfActors array
+            assignedActors.forEach((result2, idx) => {
+                listOfActors.push(result2)  
+            })
+
+            // iterate through movies list 
+            // @ result list of movie json objects
+            MoviesList.forEach((result, idx) => {
+                // format Date before appened to html tag
+                var d = new Date(result.release_date)
+                var movieDate = d.getFullYear()
+                // holds actor name to map to a movie
+                var actorName = ''
+
+                // loop through listOfActors to determine which movie 
+                // an actor belongs to then appened to movie object {result}
+                for (i = 0; i < listOfActors.length; i++) {
+                    console.log('test... ', listOfActors[i])
+                    if (result.id == listOfActors[i].movieId){ 
+                        actors.push(listOfActors[i].actor)
+                        result['actorName'] = actors
+                    }
+                }
+                // empty actors temp array to prevent 
+                // assigning wrong actors to other movie
+                actors = []
+
+                // define actors card container to be created dynamically
+                const container = document.getElementById('movieCards');
                 // Create card element
                 const card = document.createElement('div');
                 card.classList = 'card-body';
                 // Construct card content
                 const content = `
-                <div class="col-xl-4 col-lg-3">
+                <div class="col-xl-12 col-lg-4">
                     <div class="mycard" style="margin: 10px;">
-                        <img style="display: block; margin-left: auto; margin-right: auto; width: 80%; height=50%" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar" style="width:50%">
-                        <div class="mycontainer">
+                        <div class="showrow">
+                    <div class="showcolumn">
+                        <img style="display: block; margin-left: auto; margin-right: auto; width:101%; height:90px" src="{{ url_for('static', filename='assets/img/movie_main_logo.jpg') }}" alt="Avatar">
+                        <div class="showcard">
+                            <div class="mycontainer">
                             <h4>
-                                <b>title: ${result.title}</b>
+                                🎥<h3> ${result.title}</h3>
                             </h4>
-                                <p>release_date : ${result.release_date}</p>
-                                <p>${result.movie_details}</p>
+                                <p><i class='far fa-calendar-alt' style='font-size:24px'></i> ${movieDate}</p>
+                                <p><i class="fa fa-star" style="font-size:18px;color:#FFD700"></i> <h6 id="stars"></h6>
+                                    ${result.actorName}
+                                    </p>
+                                <details>
+                                    <summary>Movie Details</summary>
+                                    <p>${result.movie_details}</p>
+                                </details>
                             <div  class="col-xl-4 col-lg-5">
                                 <div id="editDel" class="btn-group">
                                     <a id="edit" class="editButton" href="#editModal" rel="modal:open" onclick="geteditMoviedata('${result.id}','${result.title}', '${result.release_date}', '${result.movie_details}')">
@@ -111,11 +164,16 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
+                    </div>
+                </div>
                     </div>   
                 </div>
                 `;
+
                 // Append newyly created card element to the container
                 container.innerHTML += content;
+                // Disable edit and delete buttons if user not authorized
                 if (permissions <= 2) {
                     var editButton = document.getElementById("movieCards").querySelectorAll("#edit");
                     var deleteButton = document.getElementById("movieCards").querySelectorAll("#delete");
@@ -127,6 +185,7 @@
                     });
                     disableaddButton();
                 }
+                html = "";
             });
             function disableaddButton() {
                 try {
@@ -140,18 +199,15 @@
             }
         </script>
         <script>
-            var myid = '';
             async function geteditMoviedata(id, title, release_date, movie_details) {
-                myid = id
                 savingid = id;
+                var movieDate = new Date(release_date)
                 formElemEdit.elements["title"].value = title;
-                formElemEdit.elements["Release"].value = release_date;
+                formElemEdit.elements["Release"].value = movieDate.toISOString().slice(0, 10);
                 formElemEdit.elements["Details"].value = movie_details;
-                if (event.target.id === 'edit') {
-                    pass;
-                }
-                else {
-                    console.log('saveing...')
+
+                if (event.target.id !== 'edit') {
+                    console.log('Updating...')
                     savingid = id;
                 }
             };
@@ -159,18 +215,19 @@
                 title = formElemEdit.elements["title"].value;
                 Release = formElemEdit.elements["Release"].value;
                 Details = formElemEdit.elements["Details"].value;
+
                 dataObj = {
                     title: title,
-                    Release: Release,
-                    Details: Details,
+                    release_date: Release,
+                    movie_details: Details,
                 };
                 postdata = [];
                 postdata.push(dataObj);
-                const data = await sendData(`/movies/${id}`, postdata, "PATCH");
                 try {
-                    // const data = await sendData(`/movies/${id}`, postdata, "PATCH");
+                    const data = await sendData(`/movies/${id}`, postdata, "PATCH");
                     if (data.success) {
-                        location.href = "/movies";
+                        location.reload();
+                        location.href = "/movies#ViewMovies";
                     } else {
                         throw data.message;
                     }
@@ -181,7 +238,6 @@
                     });
                 }
             }
-
         </script>
     </div>
 </section>

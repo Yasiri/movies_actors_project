@@ -6,8 +6,11 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS, cross_origin
 
-from backend.models import setup_db, Movies, Actors, db
+from backend.models import setup_db, Movies, Actors, db, M_A_association
 from backend.auth import AuthError, requires_auth
+import datetime
+from sqlalchemy.sql import func
+
 # heroku scale worker=1
 app = Flask(__name__)
 app.secret_key = os.getenv('GDtfDCFYjD')
@@ -54,30 +57,157 @@ def index():
 
 
 @app.route('/movies', methods=['GET'])
-# @cross_origin()
 def get_all_movies():
-    # return 'movies'
+    # query all movies..
+    movies = Movies.query.all()
+    # list to hold movies
+    movie = []
+    # dict to create movie object
+    movieOjt = {}
+    # list to hold final movie actors info
+    movieArray = []
+    # temp list for actors names
+    artists = []
+    # dict to create actors object
+    artistsObj = {}
+
+    # used for to get actors assigned to movies
+    sql = '''
+        select movies.title, ac."actorName", movies.id,
+        movies.movie_details, movies.release_date, ac.id
+        from actors as ac
+        JOIN movies_actors ON ac.id = movies_actors.actor_id_a
+        LEFT OUTER JOIN movies ON
+        movies.id = movies_actors.movie_id_a
+        WHERE movies.id = movies_actors.movie_id_a ;
+        '''
+    # rs used to execute the sql command and fetch data
+    # used to get the length of the returned data size=len(rs)
+    rs = db.engine.execute(sql).fetchall()
+    # rs used to execute the sql command and fetch data
+    # to get specific number of results
+    rs2 = db.engine.execute(sql)
+    rs3 = rs2.fetchmany(size=len(rs))
+
+    # create actors objec
+    for row in rs3:
+        artistsObj = {
+            'actorId': row[5],
+            'actor': row[1],
+            'movieId': row[2]
+        }
+        # append actors object to array
+        artists.append(artistsObj)
+
+    # create movies object
+    for m in movies:
+        movie = (m.short())
+        movieDate = datetime.datetime(m.release_date.year, 1, 1)
+        movieOjt = {
+            'id': m.id,
+            'title': m.title,
+            'release_date': movieDate.strftime("%Y"),
+            'movie_details': m.movie_details
+            }
+        # appened movies object to array
+        movieArray.append(movieOjt)
+
+        # render page and pass 2 sets of data to frontend
+    return render_template('movies.html', data=movieArray, obj=artists)
+
+
+# this route and function are used for getting movies
+# names and ids for assigning actors to movies
+@app.route('/movies/assign', methods=['GET'])
+@cross_origin()
+def get_all_movies_assign():
+    # query all movies
     movies = Movies.query.all()
 
+    # list to hold movies
     movie = []
+    # dict to create movie object
     movieOjt = {}
+    # list to hold final movie actors info
     movieArray = []
 
     for m in movies:
         movie = (m.short())
+        movieDate = datetime.datetime(m.release_date.year, 1, 1)
         movieOjt = {
             'id': m.id,
             'title': m.title,
-            'release_date': m.release_date,
+            'release_date': movieDate.strftime("%Y"),
             'movie_details': m.movie_details
             }
         movieArray.append(movieOjt)
 
-    return render_template('movies.html', data=movieArray)
-    # return jsonify({
-    #     'success': True,
-    #     'movies': movieOjt
-    # }), 200
+    # return render_template('movies.html', data=movieArray)
+    return jsonify({
+        'success': True,
+        'movies': movieArray
+    }), 200
+
+
+'''
+@ POST /actors/assignartist endpoint
+    - it assigns actor to movies table
+    - it require the 'post:assign' permission
+    - it contain the movies.long() data representation
+    - returns status code 200 and json
+      {"success": True, "movies": movie}
+      where movie an array containing only the newly assigned actors
+      or appropriate status code indicating reason for failure
+'''
+
+
+@app.route('/actors/assignartist', methods=['POST'])
+@cross_origin()
+@requires_auth('post:assign')
+def assignArtToMovie(payload):
+    # get data from request
+    data_json = request.get_json()
+
+    # new_movie_id holds the movie id from request
+    new_movie_id = data_json[0].get('movie_id')
+    # new_actor_id holds the actor id from request
+    new_actor_id = data_json[0].get('actor_id')
+
+    if not ("movie_id" in data_json[0] or "actor_id" in data_json[0]):
+        abort(401)
+
+    try:
+        # query movie by id from Movies model
+        movie = Movies.query.filter(Movies.id == new_movie_id).one_or_none()
+        if not movie:
+            abort(404)
+
+        # check if actor is already assigned to a movie
+        exists = db.session.query(db.exists().where(
+            M_A_association.actor_id_a ==
+            data_json[0].get('actor_id'))).scalar()
+
+        if exists is True:
+            # used to disallow adding actor twice to a movie
+            # this needs more work to be effecient
+            new_movie_id = ''
+            new_actor_id = ''
+        else:
+            # create insert values
+            new_movie = M_A_association(movie_id=int(new_movie_id),
+                                        actor_id=int(new_actor_id))
+
+            # insert into M_A_association table
+            actor = M_A_association.insert(new_movie)
+
+    except BaseException:
+        abort(400)
+
+    return jsonify(
+        {
+            'success': True,
+            'movies': [movie.long()]
+        }), 200
 
 
 '''
@@ -128,6 +258,7 @@ def getmovieDetail(payload, id):
 @requires_auth('post:movie')
 def createMovie(payload):
     data_json = request.get_json()
+
     # {id: -1, title: '', release_date: 0, movie_details: ''}
     if not ("title" in data_json[0]):
         abort(401)
@@ -138,12 +269,11 @@ def createMovie(payload):
 
         if(exists is True):
             abort(400)
-
     else:
         try:
             movie_title = data_json[0].get('title', None)
-            new_movie_details = data_json[0].get('Details')
-            movie_release_date = data_json[0].get('Release')
+            new_movie_details = data_json[0].get('movie_details')
+            movie_release_date = data_json[0].get('release_date')
 
             new_movie = Movies(
                 title=movie_title,
@@ -182,8 +312,8 @@ def createMovie(payload):
 def updateMovies(payload, id):
     data_json = request.get_json()
     movie_title = data_json[0].get('title')
-    movie_release_date = data_json[0].get('Release')
-    movie_details = data_json[0].get('Details')
+    movie_release_date = data_json[0].get('release_date')
+    movie_details = data_json[0].get('movie_details')
 
     try:
         movie = Movies.query.filter(Movies.id == id).one_or_none()
@@ -225,21 +355,20 @@ def updateMovies(payload, id):
 @cross_origin()
 @requires_auth('delete:movie')
 def deleteMovies(payload, id):
-    movie = Movies.query.filter(Movies.id == id).one_or_none()
+    movie = Movies.query.filter(Movies.id == id).first()
 
-    if not movie:
+    if not movie.short():
         abort(404)
 
     try:
         movie.delete()
     except BaseException:
         abort(400)
-
     return jsonify(
         {
             'success': True,
             'deleted': id,
-            "movie": movie
+            "movie": movie.short()
         }), 200
 
 
@@ -255,12 +384,13 @@ def deleteMovies(payload, id):
 
 
 @app.route('/actors', methods=['GET'])
-# @cross_origin()
+@cross_origin()
 def get_all_actors():
     actors = Actors.query.all()
     actor = []
     actorOjt = {}
     actorArray = []
+
     for a in actors:
         actor = (a.short())
         actorOjt = {
@@ -274,7 +404,7 @@ def get_all_actors():
     return render_template('actors.html', data=actorArray)
     # return jsonify({
     #     'success': True,
-    #     'actors': actor
+    #     'actors': actorArray
     # }), 200
 
 
@@ -373,12 +503,13 @@ def createActor(payload):
 @requires_auth('update:actors')
 def updateActors(payload, id):
     data_json = request.get_json()
-    actor_name = data_json[0].get('actorName', None)
+    actor_name = data_json[0].get('name')
     actor_age = data_json[0].get('age')
     actor_gender = data_json[0].get('gender')
 
     try:
-        actor = Actors.query.filter(Actors.id == id).one_or_none()
+        actor = Actors.query.filter(Actors.id == id).first()
+
         if not actor:
             abort(404)
 
@@ -419,7 +550,7 @@ def updateActors(payload, id):
 def deleteActors(payload, id):
     actor = Actors.query.filter(Actors.id == id).one_or_none()
 
-    if not actor:
+    if not actor.short():
         abort(404)
 
     try:
@@ -431,7 +562,7 @@ def deleteActors(payload, id):
         {
             'success': True,
             'deleted': id,
-            "movie": actor
+            "movie": actor.short()
         }), 200
 
 

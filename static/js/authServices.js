@@ -1,4 +1,3 @@
-// let tokenUrl = window.location.href.match(/\#(?:access_token)\=([\S\s]*?)\&/);
 var token = "";
 var payload = "";
 var tokenUrl = "";
@@ -7,61 +6,64 @@ const JWTS_LOCAL_KEY = "JWTS_LOCAL_KEY";
 const JWTS_ACTIVE_INDEX_KEY = "JWTS_ACTIVE_INDEX_KEY";
 
 $(function () {
+  // get token from URL 
   tokenUrl = window.location.hash.substr(1).split("&")[0].split("=");
+
   check_token_fragment();
+
+  // get token from {JWTS_LOCAL_KEY} constant after checking fragment
   token = localStorage.getItem("JWTS_LOCAL_KEY");
+  // save token to local storage
   localStorage.setItem("token", token);
 
+  // check token has permissons if not 
+  // set permissons to null and login status to false
   if (token === null || token === undefined) {
-    permissions = []// ["get:movies", "get:actors"]; // default permissions
-    // localStorage.setItem("permissions", permissions);
+    permissions = [];
     localStorage.setItem("loggedIn", false);
     localStorage.setItem("permsLength", permissions.length);
     hideOnLogin(permissions);
   } else {
-    try {
-      localStorage.setItem("loggedIn", true);
-      permissions = JSON.parse(atob(token.split(".")[1])).permissions;
-      localStorage.setItem("permissions", permissions);
-      localStorage.setItem("permsLength", permissions.length);
-      if (!localStorage.getItem("permissions")) {
-        permissions = ["get:movies", "get:actors"]; // default permissions
+      try {
+        // set default permissions ["get:movies", "get:actors"]
+        localStorage.setItem("loggedIn", true);
+        permissions = JSON.parse(atob(token.split(".")[1])).permissions;
         localStorage.setItem("permissions", permissions);
+        localStorage.setItem("permsLength", permissions.length);
+
+        if (!localStorage.getItem("permissions")) {
+          permissions = ["get:movies", "get:actors"];
+          localStorage.setItem("permissions", permissions);
+        }
+      } catch (e) {
+        console.log("Error: ", e);
       }
-    } catch (e) {
-      console.log("E: ", e);
-    }
+    // based on the permissons found 
+    // hide or show login or signup 
+    // also hides other features 
     hideOnLogin(permissions);
-    // sendData();
   }
 });
-// delete movie
-async function deleteMovie(movieId) {
-  try {
-    const data = await sendData(`/movies/${movieId}`, "", "DELETE");
-    if (data.success) {
-      location.reload();
-      location.href = "/movies#ViewMovies";
-    } else {
-      throw data.message;
-    }
-  } catch (error) {
-    iziToast.error({
-      title: "Error",
-      message: error,
-    });
-  }
-}
+
+/*
+ postMovie sends request to /movies endpint  
+ with method {POST} to create a new movie 
+
+*/
 async function postMovie() {
   title = formElem.elements["title"].value;
   Release = formElem.elements["Release"].value;
   Details = formElem.elements["Details"].value;
+
+  // construct a movie object 
   dataObj = {
     title: title,
-    Release: Release,
-    Details: Details,
+    release_date: Release,
+    movie_details: Details,
   };
+  // holds list of movie object 
   postdata = [];
+  // appened movie object to postdata array
   postdata.push(dataObj);
   try {
     const data = await sendData("/movies", postdata, "POST");
@@ -78,10 +80,41 @@ async function postMovie() {
     });
   }
 }
+
+/**
+ deleteMovie sends request to /movies/${movieId} endpint 
+ with method {DELETE} to delete a movie 
+
+ @param {*} movieId the id of the movie to be deleted
+*/
+async function deleteMovie(movieId) {
+  try {
+    const data = await sendData(`/movies/${movieId}`, "", "DELETE");
+    if (data.success) {
+      location.reload();
+      location.href = "/movies#ViewMovies";
+    } else {
+      throw data.message;
+    }
+  } catch (error) {
+    iziToast.error({
+      title: "Error",
+      message: error,
+    });
+  }
+}
+
+/*
+ postActor sends request to /actors endpint  
+ with method {POST} to create a new actor 
+
+*/
 async function postActor() {
   name = formElem.elements["name"].value;
   age = formElem.elements["age"].value;
   gender = formElem.elements["gender"].value;
+
+  // construct a actor object 
   dataObj = {
     actorName: name,
     age: age,
@@ -105,10 +138,17 @@ async function postActor() {
     });
   }
 }
+
+/** 
+ deleteActor sends request to/actors/${actorId} endpint 
+ with method {DELETE} to delete an actor 
+
+ @param {*} actorId the id of the actor to be deleted
+*/
 async function deleteActor(actorId) {
   try {
     const data = await sendData(`/actors/${actorId}`, "", "DELETE");
-    if (data.success) {      
+    if (data.success) {
       location.reload();
       location.href = "/actors#ViewActors";
     } else {
@@ -122,8 +162,26 @@ async function deleteActor(actorId) {
   }
 }
 
+/*
+ sendAssignData construct headers with needed payload
+ and response for assigning actors to movies endpoint 
+*/
+const sendAssignData = async (url, data, method) => {
+    const response = await fetch(url, {
+      method,
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: new Headers({
+        Authorization: `Bearer ${localStorage.getItem("JWTS_LOCAL_KEY")}`,
+        "Content-Type": "application/json",
+      }),
+      redirect: "follow",
+      referrer: "no-referrer",
+    });
+    return await response.json();
+};
 const sendData = async (url, data, method) => {
-  // Default options are marked with *
   const response = await fetch(url, {
     method,
     mode: "cors",
@@ -138,18 +196,23 @@ const sendData = async (url, data, method) => {
     body: JSON.stringify(data),
   });
 
-  return await response.json(); // parses JSON response into native JavaScript objects
+  return await response.json();
 };
-myVar = localStorage.getItem("permissions");
 
+/**
+ * hideOnLogin function is used to show and hide
+ * elements in the frontend for each user based
+ * on their permissions also if logged in or not
+ * 
+ * @param {*} permissions permissons found for the user
+ */
 function hideOnLogin(permissions) {
   if (permissions.length >= 2) {
     localStorage.setItem("loggedIn", true);
     document.getElementById("signin_signup").remove();
     document.getElementById("ManageCastingtitle").innerHTML = "Manage Casting";
     document.getElementById("loginBtn").remove();
-  } 
-  else if (permissions.length < 2){
+  } else if (permissions.length < 2) {
     localStorage.setItem("loggedIn", false);
     document.getElementById("logoutBtn").remove();
     document.getElementById("viewActorz").remove();
@@ -208,10 +271,14 @@ function decodeJWT(token) {
   return payload;
 }
 
+/**
+ * logOut users from the app and reset all 
+ * variables for next login
+ */
 const logOut = () => {
   token = "";
   payload = null;
-  permissions = '';
+  permissions = "";
   set_jwt();
   localStorage.clear();
   window.location.href = "https://fsndy.auth0.com/v2/logout";
