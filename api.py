@@ -102,11 +102,13 @@ def get_all_movies():
     # create movies object
     for m in movies:
         movie = (m.short())
-        movieDate = datetime.datetime(m.release_date.year, 1, 1)
+        print('year ', m.release_date.year)
+        # movieDate = datetime.datetime(m.release_date.year, 1, 1)
+        # print('year 2 ', movieDate.strftime("%Y"))
         movieOjt = {
             'id': m.id,
             'title': m.title,
-            'release_date': movieDate.strftime("%Y"),
+            'release_date': m.release_date.year,
             'movie_details': m.movie_details
             }
         # appened movies object to array
