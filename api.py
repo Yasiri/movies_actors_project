@@ -260,7 +260,7 @@ def getmovieDetail(payload, id):
 @requires_auth('post:movie')
 def createMovie(payload):
     data_json = request.get_json()
-
+    print('XXXXXXXXXX====== ', data_json)
     # {id: -1, title: '', release_date: 0, movie_details: ''}
     if not ("title" in data_json[0]):
         abort(401)
