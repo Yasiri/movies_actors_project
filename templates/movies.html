@@ -11,7 +11,7 @@
     // store movie id 
     var savingid = '';
     // this function is used to get actors data and convert it to json object 
-    assignedActors = assignedActorsFunc({{obj| tojson}})
+    assignedActors = assignedActorsFunc({{ obj| tojson}})
     function assignedActorsFunc(vars) {
         return vars;
     }
@@ -29,7 +29,8 @@
             <div class="col-xl-4 col-lg-5">
                 <div class="featured-text text-center text-lg-left">
                     <h4 style="margin-left: 80px;">View Movies</h4>
-                    <p class="text-black-50 mb-0"> This page allows you to add, edit and delete movies. Also allows you to 
+                    <p class="text-black-50 mb-0"> This page allows you to add, edit and delete movies. Also allows you
+                        to
                         view movies details by clicking on (> Movie Details)
                     </p>
                 </div>
@@ -41,7 +42,7 @@
                         <form id="formElem" onsubmit="event.preventDefault(); postMovie()">
                             <label for="title">Movie Title: </label>
                             <input type="text" id="title" name="title"><br><br>
-                            <label for="Release">Release Date:</label>  
+                            <label for="Release">Release Date:</label>
                             <input type="month" min="1950-03" value="2020-05" id="Release" name="Release"><br><br>
                             Movie Description: <br />
                             <textarea rows="5" cols="50" name="Details"
@@ -66,20 +67,22 @@
                         <form id="formElemEdit" onsubmit="event.preventDefault(); saveing(savingid)">
                             <label for="title">Movie Title: </label>
                             <input type="text" id="title" name="title"><br><br>
-                            <label for="Release">Release Date:</label> 
+                            <label for="Release">Release Date:</label>
                             <input class="Release" type="month" id="Release" name="Release"><br><br>
                             Movie Description: <br />
                             <textarea rows="5" cols="50" name="Details"
                                 placeholder="Enter description here..."></textarea>
                             <div class="btn-group">
-                                <button id="save" class="btn btn-primary text-center"
+                                <button id="save" name="save" class="btn btn-primary text-center"
                                     style="margin: 10px; margin-left: 100px;">
                                     Save
                                 </button>
-                                <button class="btn btn-primary text-center" style="margin: 9px; margin-left: 2px;"
-                                    href="#" rel="modaledit:close">
-                                    Cancel
-                                </button>
+                                <a href="#close-modal" rel="modal:close">
+                                    <button id="cancel" name="cancel" class="btn btn-primary text-center"
+                                        style="margin: 9px; margin-left: 2px;" href="#close-modal" rel="modal:close">
+                                        Cancel
+                                    </button>
+                                </a>
                             </div>
                         </form>
                     </div>
@@ -103,7 +106,7 @@
             // iterate through the list of actors in a movie
             // and appened data to listOfActors array
             assignedActors.forEach((result2, idx) => {
-                listOfActors.push(result2)  
+                listOfActors.push(result2)
             })
 
             // iterate through movies list 
@@ -118,7 +121,7 @@
                 // loop through listOfActors to determine which movie 
                 // an actor belongs to then appened to movie object {result}
                 for (i = 0; i < listOfActors.length; i++) {
-                    if(result.id == listOfActors[i].movieId){
+                    if (result.id == listOfActors[i].movieId) {
                         actors.push(listOfActors[i].actor)
                         result['actorName'] = actors
                     }
@@ -133,9 +136,10 @@
                 const card = document.createElement('div');
                 card.classList = 'card-body';
                 // Construct card content
-                if(result.actorName == undefined){
+                if (result.actorName == undefined) {
                     result.actorName = 'No Artist Assigned'
                 }
+
                 const content = `
                 <div class="col-xl-12 col-lg-4">
                     <div class="mycard" style="margin: 10px;">
@@ -205,6 +209,7 @@
             async function geteditMoviedata(id, title, release_date, movie_details) {
                 savingid = id;
                 var movieDate = new Date(release_date)
+                console.log('date ', release_date)
                 formElemEdit.elements["title"].value = title;
                 formElemEdit.elements["Release"].value = movieDate.toISOString().slice(0, 7);
                 formElemEdit.elements["Details"].value = movie_details;
@@ -226,19 +231,25 @@
                 };
                 postdata = [];
                 postdata.push(dataObj);
-                try {
-                    const data = await sendData(`/movies/${id}`, postdata, "PATCH");
-                    if (data.success) {
-                        location.reload();
-                        location.href = "/movies#ViewMovies";
-                    } else {
-                        throw data.message;
+                if (event.target.cancel) {
+                    $("#editModal").modal("hide");
+                    location.href = "/movies#ViewMovies";
+                }
+                else {
+                    try {
+                        const data = await sendData(`/movies/${id}`, postdata, "PATCH");
+                        if (data.success) {
+                            location.reload();
+                            location.href = "/movies#ViewMovies";
+                        } else {
+                            throw data.message;
+                        }
+                    } catch (error) {
+                        iziToast.error({
+                            title: "Error",
+                            message: error,
+                        });
                     }
-                } catch (error) {
-                    iziToast.error({
-                        title: "Error",
-                        message: error,
-                    });
                 }
             }
         </script>
