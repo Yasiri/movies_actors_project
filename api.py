@@ -277,7 +277,7 @@ def createMovie(payload):
         new_movie_details = data_json[0].get('movie_details')
         movie_release_date = data_json[0].get('release_date')
         print('insert data ', movie_release_date)
-        movieDate = datetime.datetime.strptime(movie_release_date, '%d-%m-%y')
+        movieDate = datetime.datetime.strptime(movie_release_date, '%yyy-%mm-%dd')
         d = movieDate.date()
         print('insert data type  ', d) 
         print('insert data isoformat()  ', d.isoformat()) 
