@@ -50,9 +50,8 @@ class Movies(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), unique=True, nullable=False)
-    # release_date = db.Column(db.Date, nullable=False)
+    release_date = db.Column(db.Date, nullable=False)
     movie_details = db.Column(db.String(200))
-    # test = db.Column(db.Integer)
     actors = db.relationship("Actors", secondary="movies_actors")
 
     '''
