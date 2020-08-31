@@ -286,7 +286,7 @@ def createMovie(payload):
         print('date ob ', datetime_obj.date())
         new_movie = Movies(
             title=movie_title,
-            release_date=datetime_obj,
+            release_date=datetime_obj.date(),
             movie_details=new_movie_details)
 
         Movies.insert(new_movie)
