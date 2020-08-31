@@ -328,20 +328,23 @@ def updateMovies(payload, id):
     movie_release_date = data_json[0].get('release_date')
     movie_details = data_json[0].get('movie_details')
 
-    try:
-        movie = Movies.query.filter(Movies.id == id).one_or_none()
-        if not movie:
-            abort(404)
+    # try:
+    movie = Movies.query.filter(Movies.id == id).one_or_none()
+    if not movie:
+        abort(404)
+    
+    datetime_obj = datetime.datetime.strptime(
+            movie_release_date, '%Y-%m')
+    
+    if movie_title is not None:
+        movie.title = movie_title
+        movie.release_date = datetime_obj.date()
+        movie.movie_details = movie_details
 
-        if movie_title is not None:
-            movie.title = movie_title
-            movie.release_date = movie_release_date
-            movie.movie_details = movie_details
+    movie.update()
 
-        movie.update()
-
-    except BaseException:
-        abort(400)
+    # except BaseException:
+    #     abort(400)
 
     return jsonify(
         {
