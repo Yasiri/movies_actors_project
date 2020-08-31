@@ -7,17 +7,18 @@ import json
 import psycopg2
 import datetime
 
-# # for heroku deployment
+# for heroku deployment
 database_path = os.environ['DATABASE_URL']
 conn = psycopg2.connect(database_path, sslmode='require')
 
-# print('path ', database_path)
+# for running tests
+# database_name = "capstone_test"
+
+# for local development
 # database_name = "capstoon"
-# # database_name = "capstone_test"
 # database_path = "postgresql://{}:{}@{}/{}".format(
 #     'yaser', 'yaser', 'localhost:5432', database_name)
 
-print('os ', os.environ['DATABASE_URL'])
 
 db = SQLAlchemy()
 

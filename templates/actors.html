@@ -187,9 +187,13 @@
             }
         </script>
         <script> 
-            /*
-                geteditActordata Loads actors data for update operation
-                @ savingid actor id to update
+            /**
+             * geteditActordata Loads actors data for update operation
+             * @param {*} id actor's id to edit
+             * @param {*} name actor's name
+             * @param {*} age actor's age
+             * @param {*} gender actor's gender
+             * @ savingid actor id to update
             */
             async function geteditActordata(id, name, age, gender) {
                 savingid = id;
@@ -203,11 +207,11 @@
                 }
 
             };
-            /*
-                saveing construct update data and send request
-                to /actors/${id} to update actor's info
-                @ id actor id to update
-                @ postdata data to be sent to the endpoint
+            /**
+             * saveing construct update data and send request
+             * to /actors/${id} to update actor's info
+             * @param {*} id actor id to update
+             * @ postdata data to be sent to the endpoint
             */
             async function saveing(id) {
                 name = formElemEdit.elements["name"].value;
@@ -236,10 +240,11 @@
                     });
                 }
             }
-            /*
-                assignActorToMovie construct update data and send request
-                to /actors/${id} to update actor's info
-                @ id actor id to update
+
+            /**
+             * assignActorToMovie construct update data and send request
+             * to /actors/${id} to update actor's info
+             * @param {*} id actor id to update
             */
             async function assignActorToMovie(actorID) {
                 postdata = [];
@@ -255,9 +260,12 @@
                     html += `<input type="checkbox" name="movie" value="${item.id}">    ${item.title}</input> <br>`;
                     document.querySelector("#checkedItems").innerHTML = html;
                 });
-                // on assign click get movie id and actor id 
-                // then send request to "/actors/assignartist" endpoint
-                // to link actors to movies
+
+               /**
+                *  on assign click get movie id and actor id 
+                *  then send request to "/actors/assignartist" endpoint
+                *  to link actors to movies
+               */
                 $(document).ready(function () {
                     $("#submitbox").click(async function () {
                         $.each($("input[name='movie']:checked"), function () {

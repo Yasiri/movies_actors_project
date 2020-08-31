@@ -3,11 +3,7 @@
 {% block movies %}
 <!-- Movies -->
 <script>
-    // var month = new Array();
-    // month[0] = "Jan"; month[1] = "Feb"; month[2] = "Mar"; month[3] = "Apr"; month[4] = "May"; 
-    // month[5] = "Jun"; month[6] = "Jul"; month[7] = "Aug"; month[8] = "Sept"; month[9] = "Oct"; 
-    // month[10] = "Nov"; month[11] = "Dec";
-
+    
     // store movie id 
     var savingid = '';
     // this function is used to get actors data and convert it to json object 
@@ -30,8 +26,7 @@
                 <div class="featured-text text-center text-lg-left">
                     <h4 style="margin-left: 80px;">View Movies</h4>
                     <p class="text-black-50 mb-0"> This page allows you to add, edit and delete movies. Also allows you
-                        to
-                        view movies details by clicking on (> Movie Details)
+                        to view movies details by clicking on (> Movie Details)
                     </p>
                 </div>
                 <div id="myModal" class="modal">
@@ -150,8 +145,8 @@
                             <h4>
                                <h3> ${result.title}</h3>
                             </h4>
-                            <img style="display: block; margin-left: auto; margin-right: auto; width:40%; height:70px" src="{{ url_for('static', filename='assets/img/movie_main_logo_main.jpg') }}" alt="Avatar">
-                            <br>
+                                <img style="display: block; margin-left: auto; margin-right: auto; width:40%; height:70px" src="{{ url_for('static', filename='assets/img/movie_main_logo_main.jpg') }}" alt="Avatar">
+                                <br>
                                 <p><i class='far fa-calendar-alt' style='font-size:24px'></i> ${movieDate}</p>
                                 <p><i class="fa fa-star" style="font-size:18px;color:#FFD700"></i> <h6 id="stars"></h6>
                                     ${result.actorName}
@@ -160,17 +155,17 @@
                                     <summary>Movie Details</summary>
                                     <p>${result.movie_details}</p>
                                 </details>
-                            <div  class="col-xl-4 col-lg-5">
-                                <div id="editDel" class="btn-group">
-                                    <a id="edit" class="editButton" href="#editModal" rel="modal:open" onclick="geteditMoviedata('${result.id}','${result.title}', '${result.release_date}', '${result.movie_details}')">
-                                        Edit
-                                    </a>
-                                    <a  id="delete" class="deleteButton" href="#addModal" style="margin-left: 70px" onclick="deleteMovie(${result.id})">
-                                        Delete
-                                    </a>
+                                <div  class="col-xl-4 col-lg-5">
+                                    <div id="editDel" class="btn-group">
+                                        <a id="edit" class="editButton" href="#editModal" rel="modal:open" onclick="geteditMoviedata('${result.id}','${result.title}', '${result.release_date}', '${result.movie_details}')">
+                                            Edit
+                                        </a>
+                                        <a  id="delete" class="deleteButton" href="#addModal" style="margin-left: 70px" onclick="deleteMovie(${result.id})">
+                                            Delete
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -233,7 +228,6 @@
                 postdata.push(dataObj);
                 if (event.target.cancel) {
                     $("#editModal").modal("hide");
-                    location.href = "/movies#ViewMovies";
                 }
                 else {
                     try {

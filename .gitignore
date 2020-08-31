@@ -14,10 +14,6 @@ UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 venv
 
-# Node build artifacts
-node_modules
-npm-debug.log
-
 # Local development
 *.venv
 *.dev
@@ -32,4 +28,3 @@ log.txt
 npm-debug.log*
 /.versions
 /.vscode
-/node_modules

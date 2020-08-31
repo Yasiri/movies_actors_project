@@ -13,7 +13,7 @@ from sqlalchemy.sql import func
 
 # heroku scale worker=1
 app = Flask(__name__)
-app.secret_key = os.getenv('GDtfDCFYjD')
+app.secret_key = os.getenv('SECRET_KEY')
 
 setup_db(app)
 
@@ -186,7 +186,6 @@ def assignArtToMovie(payload):
                 M_A_association.actor_id_a == new_actor_id)
             .where(M_A_association.movie_id_a == new_movie_id)).scalar()
 
-        print('exists ', exists)
         if exists is True:
             # used to disallow adding actor twice to a movie
             # this needs more work to be effecient
@@ -271,7 +270,6 @@ def createMovie(payload):
     exists = db.session.query(db.exists()
                                 .where(Movies.title == data_json[0]
                                        .get('title'))).scalar()
-
     if(exists is True):
         return jsonify(
             {
@@ -280,24 +278,24 @@ def createMovie(payload):
             }), 400
         abort(400)
     else:
-        # try:
-        movie_title = data_json[0].get('title', None)
-        new_movie_details = data_json[0].get('movie_details')
-        movie_release_date = data_json[0].get('release_date')
+        try:
+            movie_title = data_json[0].get('title', None)
+            new_movie_details = data_json[0].get('movie_details')
+            movie_release_date = data_json[0].get('release_date')
 
-        datetime_obj = datetime.datetime.strptime(
-            movie_release_date, '%Y-%m')
+            datetime_obj = datetime.datetime.strptime(
+                movie_release_date, '%Y-%m')
 
-        new_movie = Movies(
-            title=movie_title,
-            release_date=datetime_obj.date(),
-            movie_details=new_movie_details)
+            new_movie = Movies(
+                title=movie_title,
+                release_date=datetime_obj.date(),
+                movie_details=new_movie_details)
 
-        Movies.insert(new_movie)
-        movie = Movies.query.filter_by(id=new_movie.id).first()
+            Movies.insert(new_movie)
+            movie = Movies.query.filter_by(id=new_movie.id).first()
 
-        # except BaseException:
-        #     abort(400)
+        except BaseException:
+            abort(400)
 
         return jsonify(
             {
