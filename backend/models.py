@@ -73,7 +73,7 @@ class Movies(db.Model):
     '''
 
     def long(self):
-        movieDate = datetime.datetime(self.release_date.year, 1, 1)
+        # movieDate = datetime.datetime(self.release_date.year, 1, 1)
         return {
             'id': self.id,
             'title': self.title,
