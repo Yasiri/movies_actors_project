@@ -116,6 +116,7 @@ class Actors(db.Model):
     actorName = db.Column(db.String(80), nullable=True)
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(6), nullable=False)
+    test = db.Column(db.String(6))
     movies = db.relationship("Movies", secondary="movies_actors")
     '''
     short()
