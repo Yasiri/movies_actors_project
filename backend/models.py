@@ -18,6 +18,9 @@ conn = psycopg2.connect(database_path, sslmode='require')
 #     'yaser', 'yaser', 'localhost:5432', database_name)
 
 print('os ', os.environ['DATABASE_URL'])
+print('AUTH0_DOMAIN ', os.environ['AUTH0_DOMAIN'])
+print('ALGORITHMS ', os.environ['ALGORITHMS'])
+print('API_AUDIENCE ', os.environ['API_AUDIENCE'])
 db = SQLAlchemy()
 
 '''
