@@ -11,6 +11,7 @@ import datetime
 database_path = os.environ['DATABASE_URL']
 conn = psycopg2.connect(database_path, sslmode='require')
 
+print('path ', database_path)
 # database_name = "capstoon"
 # # database_name = "capstone_test"
 # database_path = "postgresql://{}:{}@{}/{}".format(
