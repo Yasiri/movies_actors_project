@@ -272,21 +272,21 @@ def createMovie(payload):
         if(exists is True):
             abort(400)
     else:
-        try:
-            movie_title = data_json[0].get('title', None)
-            new_movie_details = data_json[0].get('movie_details')
-            movie_release_date = data_json[0].get('release_date')
+        # try:
+        movie_title = data_json[0].get('title', None)
+        new_movie_details = data_json[0].get('movie_details')
+        movie_release_date = data_json[0].get('release_date')
 
-            new_movie = Movies(
-                title=movie_title,
-                release_date=movie_release_date,
-                movie_details=new_movie_details)
+        new_movie = Movies(
+            title=movie_title,
+            release_date=movie_release_date,
+            movie_details=new_movie_details)
 
-            Movies.insert(new_movie)
-            movie = Movies.query.filter_by(id=new_movie.id).first()
+        Movies.insert(new_movie)
+        movie = Movies.query.filter_by(id=new_movie.id).first()
 
-        except BaseException:
-            abort(400)
+        # except BaseException:
+        #     abort(400)
 
         return jsonify(
             {
