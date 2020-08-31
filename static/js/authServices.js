@@ -74,10 +74,19 @@ async function postMovie() {
       throw data.message;
     }
   } catch (error) {
-    iziToast.error({
-      title: "Error",
-      message: error,
-    });
+    message = '';
+    if(error == undefined){
+      iziToast.error({
+        title: "Error",
+        message: 'Movie ALready Exists..',
+      });
+    }
+    else {
+      iziToast.error({
+        title: "Error",
+        message: error,
+      });
+    }
   }
 }
 

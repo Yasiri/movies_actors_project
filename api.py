@@ -8,7 +8,7 @@ from flask_cors import CORS, cross_origin
 
 from backend.models import setup_db, Movies, Actors, db, M_A_association
 from backend.auth import AuthError, requires_auth
-import datetime
+import datetime, calendar
 from sqlalchemy.sql import func
 
 # heroku scale worker=1
@@ -260,37 +260,40 @@ def getmovieDetail(payload, id):
 @requires_auth('post:movie')
 def createMovie(payload):
     data_json = request.get_json()
-    print('XXXXXXXXXX====== ', data_json)
     # {id: -1, title: '', release_date: 0, movie_details: ''}
     if not ("title" in data_json[0]):
         abort(401)
 
-        exists = db.session.query(db.exists()
-                                  .where(Movies.title == data_json[0]
-                                         .get('title'))).scalar()
+    exists = db.session.query(db.exists()
+                                .where(Movies.title == data_json[0]
+                                       .get('title'))).scalar()
 
-        if(exists is True):
-            abort(400)
+    if(exists is True):
+        return jsonify(
+            {
+                'success': False,
+                'movies': 'Movie ALready Exists..'
+            }), 400
+        abort(400)
     else:
-        # try:
-        movie_title = data_json[0].get('title', None)
-        new_movie_details = data_json[0].get('movie_details')
-        movie_release_date = data_json[0].get('release_date')
-        print('insert data ', movie_release_date)
-        movieDate = datetime.datetime.strptime(movie_release_date, '%yyyy-%mm-%dd')
-        d = movieDate.date()
-        print('insert data type  ', d) 
-        print('insert data isoformat()  ', d.isoformat()) 
-        new_movie = Movies(
-            title=movie_title,
-            release_date=movie_release_date,
-            movie_details=new_movie_details)
+        try:
+            movie_title = data_json[0].get('title', None)
+            new_movie_details = data_json[0].get('movie_details')
+            movie_release_date = data_json[0].get('release_date')
 
-        Movies.insert(new_movie)
-        movie = Movies.query.filter_by(id=new_movie.id).first()
+            datetime_obj = datetime.datetime.strptime(
+                movie_release_date, '%Y-%m-%d')
 
-        # except BaseException:
-        #     abort(400)
+            new_movie = Movies(
+                title=movie_title,
+                release_date=datetime_obj,
+                movie_details=new_movie_details)
+
+            Movies.insert(new_movie)
+            movie = Movies.query.filter_by(id=new_movie.id).first()
+
+        except BaseException:
+            abort(400)
 
         return jsonify(
             {
