@@ -65,7 +65,7 @@ The Auth0 domain and api audience are:
 Auth0 domain: `https://fsndy.auth0.com`
 api audience: `CapstonApi`
 
-There are 3 users for this API:
+<!-- There are 3 users for this API:
 
 1. Executive Producer
 
@@ -86,7 +86,7 @@ password: Ep@fsnd123
 ```
 email: CastingAssistant@FSND.com
 password: Ep@fsnd123
-```
+``` -->
 
 ## Endpoints
 
