@@ -8,7 +8,8 @@ from flask_cors import CORS, cross_origin
 
 from backend.models import setup_db, Movies, Actors, db, M_A_association
 from backend.auth import AuthError, requires_auth
-import datetime, calendar
+import datetime
+import calendar
 from sqlalchemy.sql import func
 
 # heroku scale worker=1
@@ -181,8 +182,10 @@ def assignArtToMovie(payload):
             abort(404)
 
         # check if actor is already assigned to a movie
-        exists = db.session.query(db.exists().where(
-            M_A_association.actor_id_a == new_actor_id).where(M_A_association.movie_id_a == new_movie_id)).scalar()
+        exists = db.session.query(
+            db.exists().where(
+                M_A_association.actor_id_a == new_actor_id)
+            .where(M_A_association.movie_id_a == new_movie_id)).scalar()
 
         print('exists ', exists)
         if exists is True:

@@ -8,16 +8,16 @@ import psycopg2
 import datetime
 
 # # for heroku deployment
-database_path = os.environ['DATABASE_URL']
-conn = psycopg2.connect(database_path, sslmode='require')
+# database_path = os.environ['DATABASE_URL']
+# conn = psycopg2.connect(database_path, sslmode='require')
 
 # print('path ', database_path)
-# database_name = "capstoon"
-# # database_name = "capstone_test"
-# database_path = "postgresql://{}:{}@{}/{}".format(
-#     'yaser', 'yaser', 'localhost:5432', database_name)
+database_name = "capstoon"
+# database_name = "capstone_test"
+database_path = "postgresql://{}:{}@{}/{}".format(
+    'yaser', 'yaser', 'localhost:5432', database_name)
 
-
+print('os ', os.environ['DATABASE_URL'])
 db = SQLAlchemy()
 
 '''
@@ -29,7 +29,7 @@ setup_db(app)
 def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config['SECRET_KEY'] = 'GDtfDCFYjD'
+    app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
     db.app = app
     db.init_app(app)
     db.create_all()
