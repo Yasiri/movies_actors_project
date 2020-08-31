@@ -5,7 +5,7 @@ from jose import jwt
 from urllib.request import urlopen
 import os
 
-AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']  # 'fsndy.auth0.com'
+AUTH0_DOMAIN = os.environ['fsndy.auth0.com']  # 'fsndy.auth0.com'
 ALGORITHMS = os.environ['ALGORITHMS']  # ['RS256']
 API_AUDIENCE = os.environ['API_AUDIENCE']  # 'CapstonApi' API_AUDIENCE
 # AuthError Exception
