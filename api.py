@@ -135,11 +135,11 @@ def get_all_movies_assign():
 
     for m in movies:
         movie = (m.short())
-        movieDate = datetime.datetime(m.release_date.year, 1, 1)
+        # movieDate = datetime.datetime(m.release_date.year, 1, 1)
         movieOjt = {
             'id': m.id,
             'title': m.title,
-            'release_date': movieDate.strftime("%Y"),
+            'release_date': m.release_date,  # movieDate.strftime("%Y"),
             'movie_details': m.movie_details
             }
         movieArray.append(movieOjt)
